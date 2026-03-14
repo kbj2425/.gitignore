@@ -3,33 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>뽑기 - READIN</title>
+    <title>영혼석 뽑기 - READIN</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: 'Arial', sans-serif;
-            background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+            background: linear-gradient(135deg, #FFC0CB, #FFB6C1);
             min-height: 100vh;
-            color: white;
         }
 
         .header {
-            background: rgba(255,255,255,0.05);
-            backdrop-filter: blur(10px);
+            background: white;
             padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
         }
 
-        .logo { color: #FFD700; font-size: 1.8em; font-weight: bold; }
+        .logo { color: #FFC0CB; font-size: 1.8em; font-weight: bold; }
 
         .user-menu { position: relative; }
 
         .username {
-            color: #FFD700;
+            color: #FFC0CB;
             font-weight: bold;
             cursor: pointer;
             padding: 10px 15px;
@@ -37,14 +35,14 @@
             transition: background 0.3s;
         }
 
-        .username:hover { background: rgba(255,255,255,0.1); }
+        .username:hover { background: #f0f0f0; }
 
         .dropdown {
             position: absolute;
             top: 100%; right: 0;
-            background: #1a1a2e;
-            border: 1px solid rgba(255,255,255,0.2);
-            min-width: 150px;
+            background: white;
+            min-width: 180px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
             border-radius: 5px;
             display: none;
             z-index: 1000;
@@ -56,11 +54,11 @@
             display: block;
             padding: 10px 15px;
             text-decoration: none;
-            color: #ccc;
+            color: #333;
             transition: background 0.3s;
         }
 
-        .dropdown a:hover { background: rgba(255,255,255,0.1); color: white; }
+        .dropdown a:hover { background: #FFC0CB; color: white; }
 
         .container {
             max-width: 900px;
@@ -68,97 +66,65 @@
             padding: 30px 20px;
         }
 
-        /* 토큰 표시 */
-        .token-bar {
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,215,0,0.3);
+        /* 영혼석 잔액 바 */
+        .balance-bar {
+            background: white;
             border-radius: 15px;
             padding: 15px 25px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
         }
 
-        .token-bar-left { font-size: 1.1em; color: #aaa; }
+        .balance-label { color: #666; font-size: 1em; }
 
-        .token-bar-amount {
-            font-size: 2em;
+        .balance-amount {
+            font-size: 1.8em;
             font-weight: bold;
-            color: #FFD700;
+            color: #FF69B4;
         }
 
-        /* 뉴스 배너 */
-        .news-banner {
-            background: linear-gradient(135deg, rgba(155,89,182,0.3), rgba(255,215,0,0.1));
-            border: 1px solid rgba(255,215,0,0.4);
-            border-radius: 15px;
-            padding: 15px 20px;
-            margin-bottom: 30px;
-            overflow: hidden;
-        }
-
-        .news-banner h3 {
-            color: #FFD700;
-            margin-bottom: 10px;
-            font-size: 1em;
-        }
-
-        .news-ticker {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            max-height: 80px;
-            overflow-y: auto;
-        }
-
-        .news-item {
-            font-size: 0.9em;
-            color: #ddd;
-        }
-
-        .news-item .grade-sss { color: #FFD700; font-weight: bold; }
-        .news-item .grade-ss  { color: #9B59B6; font-weight: bold; }
-
-        /* 뽑기 메인 */
+        /* 뽑기 메인 카드 */
         .gacha-main {
-            background: rgba(255,255,255,0.03);
-            border: 1px solid rgba(255,255,255,0.1);
+            background: white;
             border-radius: 20px;
             padding: 40px;
             text-align: center;
-            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin-bottom: 25px;
         }
 
         .gacha-title {
             font-size: 2em;
             font-weight: bold;
-            color: #FFD700;
-            margin-bottom: 10px;
-            text-shadow: 0 0 20px rgba(255,215,0,0.5);
+            color: #FF69B4;
+            margin-bottom: 8px;
         }
 
         .gacha-subtitle {
             color: #aaa;
             margin-bottom: 30px;
+            font-size: 0.95em;
         }
 
-        /* 뽑기 수량 조절 */
+        /* 수량 조절 */
         .count-control {
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 20px;
-            margin: 25px 0;
+            gap: 25px;
+            margin: 20px 0;
         }
 
         .count-btn {
             width: 45px;
             height: 45px;
             border-radius: 50%;
-            border: 2px solid #FFD700;
-            background: transparent;
-            color: #FFD700;
+            border: 2px solid #FFC0CB;
+            background: white;
+            color: #FF69B4;
             font-size: 1.5em;
             cursor: pointer;
             transition: all 0.3s;
@@ -167,27 +133,24 @@
             justify-content: center;
         }
 
-        .count-btn:hover {
-            background: #FFD700;
-            color: #1a1a2e;
-        }
+        .count-btn:hover { background: #FFC0CB; color: white; }
 
         .count-display {
             font-size: 2.5em;
             font-weight: bold;
-            color: white;
-            min-width: 60px;
+            color: #333;
+            min-width: 50px;
         }
 
         .cost-display {
-            color: #FFD700;
-            font-size: 1.1em;
-            margin-bottom: 20px;
+            color: #FF69B4;
+            font-size: 1.05em;
+            margin-bottom: 25px;
         }
 
         .draw-btn {
-            background: linear-gradient(135deg, #FFD700, #FFA500);
-            color: #1a1a2e;
+            background: linear-gradient(135deg, #FFC0CB, #FF69B4);
+            color: white;
             border: none;
             padding: 18px 60px;
             border-radius: 50px;
@@ -195,27 +158,25 @@
             font-weight: bold;
             cursor: pointer;
             transition: all 0.3s;
-            box-shadow: 0 5px 20px rgba(255,215,0,0.4);
+            box-shadow: 0 5px 20px rgba(255,105,180,0.4);
         }
 
         .draw-btn:hover {
             transform: translateY(-3px);
-            box-shadow: 0 10px 30px rgba(255,215,0,0.6);
+            box-shadow: 0 10px 30px rgba(255,105,180,0.5);
         }
 
         .draw-btn:disabled {
-            background: #555;
-            color: #888;
+            background: #ccc;
             cursor: not-allowed;
             transform: none;
             box-shadow: none;
         }
 
-        /* 확률표 버튼 */
         .rates-btn {
             background: transparent;
-            border: 1px solid rgba(255,255,255,0.3);
-            color: #aaa;
+            border: 1px solid #FFC0CB;
+            color: #FF69B4;
             padding: 8px 20px;
             border-radius: 20px;
             cursor: pointer;
@@ -224,52 +185,47 @@
             font-size: 0.9em;
         }
 
-        .rates-btn:hover {
-            border-color: #FFD700;
-            color: #FFD700;
-        }
+        .rates-btn:hover { background: #FFC0CB; color: white; }
 
-        /* 뽑기 결과 오버레이 */
+        /* ===== 뽑기 결과 오버레이 ===== */
         .result-overlay {
             display: none;
             position: fixed;
             z-index: 3000;
             top: 0; left: 0;
             width: 100%; height: 100%;
-            background: rgba(0,0,0,0.85);
+            background: rgba(0,0,0,0.75);
             justify-content: center;
             align-items: center;
             flex-direction: column;
         }
 
-        .result-overlay.show {
-            display: flex;
-        }
+        .result-overlay.show { display: flex; }
 
         .result-cards {
             display: flex;
             flex-wrap: wrap;
             gap: 15px;
             justify-content: center;
-            max-width: 800px;
+            max-width: 820px;
             padding: 20px;
         }
 
-        /* 카드 */
+        /* 결과 카드 */
         .result-card {
             width: 140px;
-            height: 200px;
-            border-radius: 15px;
+            height: 210px;
+            border-radius: 16px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 15px;
+            padding: 15px 10px;
             text-align: center;
             position: relative;
             overflow: hidden;
-            animation: cardReveal 0.5s ease forwards;
             opacity: 0;
+            animation: cardReveal 0.4s ease forwards;
         }
 
         @keyframes cardReveal {
@@ -277,186 +233,269 @@
             to   { opacity: 1; transform: scale(1) rotateY(0deg); }
         }
 
-        .card-sss {
-            background: linear-gradient(135deg, #1a1a00, #332200);
+        .card-SSS {
+            background: linear-gradient(135deg, #fff8e1, #fff3cd);
             border: 2px solid #FFD700;
-            box-shadow: 0 0 30px rgba(255,215,0,0.8), 0 0 60px rgba(255,215,0,0.4);
+            box-shadow: 0 0 25px rgba(255,215,0,0.7), 0 0 50px rgba(255,215,0,0.3);
         }
 
-        .card-ss {
-            background: linear-gradient(135deg, #1a0033, #2d0052);
+        .card-SS {
+            background: linear-gradient(135deg, #f5eeff, #ede0ff);
             border: 2px solid #9B59B6;
-            box-shadow: 0 0 20px rgba(155,89,182,0.7), 0 0 40px rgba(155,89,182,0.3);
+            box-shadow: 0 0 20px rgba(155,89,182,0.6);
         }
 
-        .card-s {
-            background: linear-gradient(135deg, #001a33, #002952);
+        .card-S {
+            background: linear-gradient(135deg, #e8f4fd, #d6eaf8);
             border: 2px solid #3498DB;
-            box-shadow: 0 0 15px rgba(52,152,219,0.6);
+            box-shadow: 0 0 15px rgba(52,152,219,0.5);
         }
 
-        .card-a {
-            background: linear-gradient(135deg, #001a00, #003300);
+        .card-A {
+            background: linear-gradient(135deg, #eafaf1, #d5f5e3);
             border: 2px solid #27AE60;
-            box-shadow: 0 0 10px rgba(39,174,96,0.4);
         }
 
-        .card-b {
-            background: linear-gradient(135deg, #1a1a1a, #2d2d2d);
-            border: 2px solid #ECF0F1;
+        .card-B {
+            background: linear-gradient(135deg, #fdfefe, #f2f3f4);
+            border: 2px solid #BDC3C7;
         }
 
-        .card-c {
-            background: linear-gradient(135deg, #111, #1a1a1a);
+        .card-C {
+            background: linear-gradient(135deg, #f8f9fa, #ecf0f1);
             border: 2px solid #95A5A6;
         }
 
-        .card-emoji { font-size: 3em; margin-bottom: 8px; }
-
-        .card-grade {
-            font-size: 0.75em;
-            font-weight: bold;
-            padding: 2px 8px;
-            border-radius: 10px;
-            margin-bottom: 6px;
+        /* 원형 이미지 프레임 */
+        .char-frame {
+            position: relative;
+            width: 80px;
+            height: 80px;
+            margin-bottom: 10px;
         }
 
-        .grade-sss { background: #FFD700; color: #1a1a1a; }
-        .grade-ss  { background: #9B59B6; color: white; }
-        .grade-s   { background: #3498DB; color: white; }
-        .grade-a   { background: #27AE60; color: white; }
-        .grade-b   { background: #95A5A6; color: white; }
-        .grade-c   { background: #636e72; color: white; }
+        .char-frame::before {
+            content: '';
+            position: absolute;
+            top: -4px; left: -4px;
+            width: calc(100% + 8px);
+            height: calc(100% + 8px);
+            border-radius: 50%;
+            background: conic-gradient(
+                var(--grade-color) 0deg,
+                transparent 120deg,
+                var(--grade-color) 240deg,
+                transparent 360deg
+            );
+            animation: rotateBorder 2s linear infinite;
+            z-index: 0;
+        }
+
+        @keyframes rotateBorder {
+            from { transform: rotate(0deg); }
+            to   { transform: rotate(360deg); }
+        }
+
+        .char-img-wrap {
+            position: relative;
+            z-index: 1;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            overflow: hidden;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .char-img-wrap img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .char-emoji-fallback {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.2em;
+        }
+
+        .card-grade-badge {
+            font-size: 0.72em;
+            font-weight: bold;
+            padding: 3px 9px;
+            border-radius: 10px;
+            margin-bottom: 5px;
+            color: white;
+        }
+
+        .badge-SSS { background: #DAA520; color: white; }
+        .badge-SS  { background: #9B59B6; }
+        .badge-S   { background: #3498DB; }
+        .badge-A   { background: #27AE60; }
+        .badge-B   { background: #95A5A6; }
+        .badge-C   { background: #7f8c8d; }
 
         .card-name {
-            font-size: 0.85em;
+            font-size: 0.82em;
             font-weight: bold;
-            color: white;
+            color: #333;
             margin-top: 4px;
         }
 
         .card-dup {
             position: absolute;
-            top: 5px; right: 5px;
-            background: rgba(255,100,100,0.8);
+            top: 6px; right: 6px;
+            background: rgba(220,53,69,0.85);
             color: white;
-            font-size: 0.65em;
+            font-size: 0.62em;
             padding: 2px 5px;
             border-radius: 5px;
         }
 
-        /* SSS 이펙트 */
-        .effect-sss {
+        .card-shine {
             position: absolute;
             top: 0; left: 0;
             width: 100%; height: 100%;
+            pointer-events: none;
+        }
+
+        .card-SSS .card-shine {
             background: linear-gradient(
                 45deg,
                 transparent 30%,
-                rgba(255,215,0,0.3) 50%,
+                rgba(255,215,0,0.35) 50%,
                 transparent 70%
             );
-            animation: shimmerSSS 1s infinite;
+            animation: shineSSS 1s infinite;
         }
 
-        @keyframes shimmerSSS {
-            0%   { transform: translateX(-100%) rotate(45deg); }
-            100% { transform: translateX(300%) rotate(45deg); }
+        .card-SS .card-shine {
+            background: linear-gradient(
+                45deg,
+                transparent 35%,
+                rgba(155,89,182,0.25) 50%,
+                transparent 65%
+            );
+            animation: shineSS 1.5s infinite;
         }
 
-        /* SS 이펙트 */
-        .effect-ss {
-            position: absolute;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
+        .card-S .card-shine {
             background: linear-gradient(
                 45deg,
                 transparent 40%,
-                rgba(155,89,182,0.25) 50%,
+                rgba(52,152,219,0.18) 50%,
                 transparent 60%
             );
-            animation: shimmerSS 1.5s infinite;
+            animation: shineS 2s infinite;
         }
 
-        @keyframes shimmerSS {
-            0%   { transform: translateX(-100%) rotate(45deg); }
-            100% { transform: translateX(300%) rotate(45deg); }
+        @keyframes shineSSS {
+            0%   { transform: translateX(-150%) rotate(45deg); }
+            100% { transform: translateX(350%) rotate(45deg); }
         }
-
-        /* S 이펙트 */
-        .effect-s {
-            position: absolute;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: linear-gradient(
-                45deg,
-                transparent 45%,
-                rgba(52,152,219,0.15) 50%,
-                transparent 55%
-            );
-            animation: shimmerS 2s infinite;
+        @keyframes shineSS {
+            0%   { transform: translateX(-150%) rotate(45deg); }
+            100% { transform: translateX(350%) rotate(45deg); }
         }
-
-        @keyframes shimmerS {
-            0%   { transform: translateX(-100%) rotate(45deg); }
-            100% { transform: translateX(300%) rotate(45deg); }
+        @keyframes shineS {
+            0%   { transform: translateX(-150%) rotate(45deg); }
+            100% { transform: translateX(350%) rotate(45deg); }
         }
 
         .result-close-btn {
-            margin-top: 25px;
-            background: rgba(255,255,255,0.1);
-            border: 1px solid rgba(255,255,255,0.3);
-            color: white;
+            margin-top: 20px;
+            background: white;
+            border: none;
+            color: #FF69B4;
             padding: 12px 40px;
             border-radius: 25px;
             cursor: pointer;
             font-size: 1em;
+            font-weight: bold;
             transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
         }
 
-        .result-close-btn:hover {
-            background: rgba(255,255,255,0.2);
-        }
+        .result-close-btn:hover { background: #FFC0CB; color: white; }
 
-        /* SSS 전체화면 이펙트 */
+        /* ===== SSS 이펙트 ===== */
         .sss-overlay {
             display: none;
             position: fixed;
             z-index: 4000;
             top: 0; left: 0;
             width: 100%; height: 100%;
-            background: black;
+            background: radial-gradient(ellipse at center,
+                #7a5c00 0%, #3d2c00 30%, #1a1000 65%, #000 100%);
             justify-content: center;
             align-items: center;
             flex-direction: column;
+            overflow: hidden;
         }
 
         .sss-overlay.show { display: flex; }
 
-        .sss-text {
-            font-size: 5em;
-            font-weight: bold;
-            color: #FFD700;
-            text-shadow:
-                0 0 20px #FFD700,
-                0 0 40px #FFD700,
-                0 0 80px #FFA500;
-            animation: sssGlow 0.5s ease-in-out infinite alternate;
+        /* 배경 빛 폭발 */
+        .sss-overlay::before {
+            content: '';
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 150vmax;
+            height: 150vmax;
+            background: conic-gradient(
+                rgba(255,215,0,0.15) 0deg,
+                transparent 20deg,
+                rgba(255,165,0,0.1) 40deg,
+                transparent 60deg,
+                rgba(255,215,0,0.15) 80deg,
+                transparent 100deg,
+                rgba(255,165,0,0.1) 120deg,
+                transparent 140deg,
+                rgba(255,215,0,0.15) 160deg,
+                transparent 180deg,
+                rgba(255,165,0,0.1) 200deg,
+                transparent 220deg,
+                rgba(255,215,0,0.15) 240deg,
+                transparent 260deg,
+                rgba(255,165,0,0.1) 280deg,
+                transparent 300deg,
+                rgba(255,215,0,0.15) 320deg,
+                transparent 340deg,
+                rgba(255,165,0,0.1) 360deg
+            );
+            animation: sssRayRotate 4s linear infinite;
+            pointer-events: none;
         }
 
-        @keyframes sssGlow {
-            from { text-shadow: 0 0 20px #FFD700, 0 0 40px #FFD700; }
-            to   { text-shadow: 0 0 40px #FFD700, 0 0 80px #FFA500, 0 0 120px #FF6600; }
+        @keyframes sssRayRotate {
+            from { transform: translate(-50%, -50%) rotate(0deg); }
+            to   { transform: translate(-50%, -50%) rotate(360deg); }
         }
 
-        .sss-char {
-            font-size: 8em;
-            animation: sssFloat 1s ease-in-out infinite alternate;
+        /* 화면 가장자리 불꽃 */
+        .sss-overlay::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background:
+                radial-gradient(ellipse at 0% 0%,   rgba(255,100,0,0.4) 0%, transparent 40%),
+                radial-gradient(ellipse at 100% 0%,  rgba(255,200,0,0.4) 0%, transparent 40%),
+                radial-gradient(ellipse at 0% 100%,  rgba(255,150,0,0.4) 0%, transparent 40%),
+                radial-gradient(ellipse at 100% 100%,rgba(255,50,0,0.4)  0%, transparent 40%);
+            animation: sssCornerFlame 0.5s ease-in-out infinite alternate;
+            pointer-events: none;
         }
 
-        @keyframes sssFloat {
-            from { transform: translateY(0); }
-            to   { transform: translateY(-20px); }
+        @keyframes sssCornerFlame {
+            from { opacity: 0.6; }
+            to   { opacity: 1; }
         }
 
         .sss-particles {
@@ -469,11 +508,8 @@
 
         .particle {
             position: absolute;
-            width: 6px;
-            height: 6px;
             border-radius: 50%;
-            background: #FFD700;
-            animation: particleFly 2s ease-out forwards;
+            animation: particleFly 1.8s ease-out forwards;
         }
 
         @keyframes particleFly {
@@ -481,184 +517,521 @@
             100% { opacity: 0; transform: translate(var(--tx), var(--ty)) scale(0); }
         }
 
-        /* SS 전체화면 이펙트 */
+        /* 불꽃 파티클 */
+        .flame-particle {
+            position: absolute;
+            width: 8px;
+            height: 20px;
+            border-radius: 50% 50% 20% 20%;
+            animation: flameFly 1.5s ease-out forwards;
+            transform-origin: bottom center;
+        }
+
+        @keyframes flameFly {
+            0%   { opacity: 1; transform: translateY(0) scaleX(1) rotate(var(--rot)); }
+            50%  { opacity: 0.8; transform: translateY(var(--ty)) scaleX(0.7) rotate(calc(var(--rot) + 20deg)); }
+            100% { opacity: 0; transform: translateY(calc(var(--ty) * 2)) scaleX(0) rotate(calc(var(--rot) + 40deg)); }
+        }
+
+        .sss-grade-text {
+            position: relative;
+            z-index: 1;
+            font-size: 5.5em;
+            font-weight: 900;
+            color: #FFD700;
+            text-shadow:
+                0 0 10px #fff,
+                0 0 20px #FFD700,
+                0 0 40px #FFD700,
+                0 0 80px #FFA500,
+                0 0 120px #FF6600,
+                0 0 160px #FF4400;
+            animation: sssGlow 0.4s ease-in-out infinite alternate;
+            margin-bottom: 25px;
+            letter-spacing: 12px;
+        }
+
+        @keyframes sssGlow {
+            from {
+                text-shadow:
+                    0 0 10px #fff,
+                    0 0 20px #FFD700,
+                    0 0 40px #FFD700,
+                    0 0 80px #FFA500;
+                transform: scale(1);
+            }
+            to {
+                text-shadow:
+                    0 0 15px #fff,
+                    0 0 30px #FFD700,
+                    0 0 60px #FFD700,
+                    0 0 100px #FFA500,
+                    0 0 140px #FF6600,
+                    0 0 180px #FF4400;
+                transform: scale(1.05);
+            }
+        }
+
+        /* 이펙트용 큰 원형 프레임 */
+        .effect-char-frame {
+            position: relative;
+            z-index: 1;
+            width: 180px;
+            height: 180px;
+            margin-bottom: 20px;
+        }
+
+        /* SSS 프레임 - 3겹 회전 테두리 */
+        .effect-char-frame.sss-frame::before,
+        .effect-char-frame.sss-frame::after {
+            content: '';
+            position: absolute;
+            border-radius: 50%;
+            z-index: 0;
+        }
+
+        .effect-char-frame.sss-frame::before {
+            top: -8px; left: -8px;
+            width: calc(100% + 16px);
+            height: calc(100% + 16px);
+            background: conic-gradient(
+                #FFD700 0deg, #FFA500 60deg,
+                #FF6600 120deg, transparent 150deg,
+                #FFD700 180deg, #FFA500 240deg,
+                #FF6600 300deg, transparent 330deg,
+                #FFD700 360deg
+            );
+            animation: rotateBorderFast 1s linear infinite;
+        }
+
+        .effect-char-frame.sss-frame::after {
+            top: -14px; left: -14px;
+            width: calc(100% + 28px);
+            height: calc(100% + 28px);
+            background: conic-gradient(
+                transparent 0deg,
+                rgba(255,215,0,0.5) 60deg,
+                transparent 120deg,
+                rgba(255,165,0,0.5) 180deg,
+                transparent 240deg,
+                rgba(255,215,0,0.5) 300deg,
+                transparent 360deg
+            );
+            animation: rotateBorderFast 1.5s linear infinite reverse;
+        }
+
+        @keyframes rotateBorderFast {
+            from { transform: rotate(0deg); }
+            to   { transform: rotate(360deg); }
+        }
+
+        /* SS 프레임 - 2겹 */
+        .effect-char-frame.ss-frame::before {
+            content: '';
+            position: absolute;
+            top: -6px; left: -6px;
+            width: calc(100% + 12px);
+            height: calc(100% + 12px);
+            border-radius: 50%;
+            background: conic-gradient(
+                #9B59B6 0deg, #CE93D8 90deg,
+                transparent 130deg,
+                #9B59B6 180deg, #CE93D8 270deg,
+                transparent 310deg,
+                #9B59B6 360deg
+            );
+            animation: rotateBorderFast 1.2s linear infinite;
+            z-index: 0;
+        }
+
+        .effect-char-frame.ss-frame::after {
+            content: '';
+            position: absolute;
+            top: -12px; left: -12px;
+            width: calc(100% + 24px);
+            height: calc(100% + 24px);
+            border-radius: 50%;
+            background: conic-gradient(
+                transparent 0deg,
+                rgba(155,89,182,0.4) 90deg,
+                transparent 180deg,
+                rgba(155,89,182,0.4) 270deg,
+                transparent 360deg
+            );
+            animation: rotateBorderFast 2s linear infinite reverse;
+            z-index: 0;
+        }
+
+        /* S 프레임 - 1겹 */
+        .effect-char-frame.s-frame::before {
+            content: '';
+            position: absolute;
+            top: -5px; left: -5px;
+            width: calc(100% + 10px);
+            height: calc(100% + 10px);
+            border-radius: 50%;
+            background: conic-gradient(
+                #3498DB 0deg, #85C1E9 120deg,
+                transparent 160deg,
+                #3498DB 240deg, #85C1E9 320deg,
+                transparent 360deg
+            );
+            animation: rotateBorder 1.5s linear infinite;
+            z-index: 0;
+        }
+
+        .effect-char-frame.s-frame::after { display: none; }
+
+        .effect-img-wrap {
+            position: relative;
+            z-index: 1;
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            overflow: hidden;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .effect-img-wrap img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .effect-emoji-fallback {
+            font-size: 5em;
+        }
+
+        .sss-char-name {
+            position: relative;
+            z-index: 1;
+            color: #FFD700;
+            font-size: 2em;
+            font-weight: bold;
+            text-shadow:
+                0 0 10px #FFD700,
+                0 0 20px #FFA500;
+            animation: sssNamePulse 0.6s ease-in-out infinite alternate;
+        }
+
+        @keyframes sssNamePulse {
+            from { transform: scale(1); }
+            to   { transform: scale(1.05); }
+        }
+
+        /* ===== SS 이펙트 ===== */
         .ss-overlay {
             display: none;
             position: fixed;
             z-index: 4000;
             top: 0; left: 0;
             width: 100%; height: 100%;
-            background: linear-gradient(135deg, #0d0021, #1a0033);
+            background: radial-gradient(ellipse at center,
+                #4a1a7a 0%, #2d0052 40%, #1a0033 70%, #0d0021 100%);
             justify-content: center;
             align-items: center;
             flex-direction: column;
+            overflow: hidden;
         }
 
         .ss-overlay.show { display: flex; }
 
-        .ss-text {
-            font-size: 4em;
-            font-weight: bold;
-            color: #9B59B6;
+        .ss-overlay::before {
+            content: '';
+            position: absolute;
+            top: 50%; left: 50%;
+            width: 120vmax;
+            height: 120vmax;
+            background: conic-gradient(
+                rgba(155,89,182,0.12) 0deg,
+                transparent 30deg,
+                rgba(206,147,216,0.08) 60deg,
+                transparent 90deg,
+                rgba(155,89,182,0.12) 120deg,
+                transparent 150deg,
+                rgba(206,147,216,0.08) 180deg,
+                transparent 210deg,
+                rgba(155,89,182,0.12) 240deg,
+                transparent 270deg,
+                rgba(206,147,216,0.08) 300deg,
+                transparent 330deg,
+                rgba(155,89,182,0.12) 360deg
+            );
+            animation: sssRayRotate 5s linear infinite;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+        }
+
+        .ss-overlay::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background:
+                radial-gradient(ellipse at 0% 50%,   rgba(155,89,182,0.3) 0%, transparent 50%),
+                radial-gradient(ellipse at 100% 50%,  rgba(155,89,182,0.3) 0%, transparent 50%);
+            animation: ssPulse 1s ease-in-out infinite alternate;
+            pointer-events: none;
+        }
+
+        @keyframes ssPulse {
+            from { opacity: 0.5; }
+            to   { opacity: 1; }
+        }
+
+        .ss-particles {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .ss-grade-text {
+            position: relative;
+            z-index: 1;
+            font-size: 4.5em;
+            font-weight: 900;
+            color: #CE93D8;
             text-shadow:
+                0 0 10px #fff,
                 0 0 20px #9B59B6,
-                0 0 40px #8E44AD;
-            animation: ssGlow 0.8s ease-in-out infinite alternate;
+                0 0 40px #9B59B6,
+                0 0 80px #8E44AD;
+            animation: ssGlow 0.6s ease-in-out infinite alternate;
+            margin-bottom: 25px;
+            letter-spacing: 10px;
         }
 
         @keyframes ssGlow {
-            from { text-shadow: 0 0 15px #9B59B6; }
-            to   { text-shadow: 0 0 35px #9B59B6, 0 0 60px #8E44AD; }
+            from {
+                text-shadow:
+                    0 0 10px #fff,
+                    0 0 20px #9B59B6,
+                    0 0 40px #9B59B6;
+            }
+            to {
+                text-shadow:
+                    0 0 15px #fff,
+                    0 0 30px #CE93D8,
+                    0 0 60px #9B59B6,
+                    0 0 100px #8E44AD;
+                transform: scale(1.03);
+            }
         }
 
-        .ss-char { font-size: 6em; }
+        .ss-char-name {
+            position: relative;
+            z-index: 1;
+            color: #CE93D8;
+            font-size: 1.6em;
+            font-weight: bold;
+            text-shadow: 0 0 10px rgba(155,89,182,0.8);
+        }
 
-        /* S 전체화면 이펙트 */
+        /* ===== S 이펙트 ===== */
         .s-overlay {
             display: none;
             position: fixed;
             z-index: 4000;
             top: 0; left: 0;
             width: 100%; height: 100%;
-            background: linear-gradient(135deg, #001a33, #002244);
+            background: radial-gradient(ellipse at center,
+                #0d4f8c 0%, #003366 40%, #002244 70%, #001133 100%);
             justify-content: center;
             align-items: center;
             flex-direction: column;
+            overflow: hidden;
         }
 
         .s-overlay.show { display: flex; }
 
-        .s-text {
-            font-size: 3.5em;
-            font-weight: bold;
-            color: #3498DB;
-            text-shadow: 0 0 20px #3498DB;
-            animation: sGlow 1s ease-in-out infinite alternate;
+        .s-overlay::before {
+            content: '';
+            position: absolute;
+            top: 50%; left: 50%;
+            width: 100vmax;
+            height: 100vmax;
+            background: conic-gradient(
+                rgba(52,152,219,0.1) 0deg,
+                transparent 40deg,
+                rgba(52,152,219,0.1) 80deg,
+                transparent 120deg,
+                rgba(52,152,219,0.1) 160deg,
+                transparent 200deg,
+                rgba(52,152,219,0.1) 240deg,
+                transparent 280deg,
+                rgba(52,152,219,0.1) 320deg,
+                transparent 360deg
+            );
+            animation: sssRayRotate 6s linear infinite;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+        }
+
+        .s-overlay::after { display: none; }
+
+        .s-particles {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .s-grade-text {
+            position: relative;
+            z-index: 1;
+            font-size: 4em;
+            font-weight: 900;
+            color: #85C1E9;
+            text-shadow:
+                0 0 10px #fff,
+                0 0 20px #3498DB,
+                0 0 40px #2980B9;
+            animation: sGlow 0.8s ease-in-out infinite alternate;
+            margin-bottom: 25px;
+            letter-spacing: 8px;
         }
 
         @keyframes sGlow {
-            from { text-shadow: 0 0 10px #3498DB; }
-            to   { text-shadow: 0 0 25px #3498DB, 0 0 40px #2980B9; }
+            from { text-shadow: 0 0 10px #fff, 0 0 20px #3498DB, 0 0 40px #2980B9; }
+            to   { text-shadow: 0 0 15px #fff, 0 0 30px #3498DB, 0 0 60px #2980B9, 0 0 80px #1A5276; }
         }
 
-        .s-char { font-size: 5em; }
+        .s-char-name {
+            position: relative;
+            z-index: 1;
+            color: #85C1E9;
+            font-size: 1.4em;
+            font-weight: bold;
+            text-shadow: 0 0 10px rgba(52,152,219,0.6);
+        }
 
-        /* 확률표 모달 */
+        /* ===== 확률표 모달 ===== */
         .rates-modal {
             display: none;
             position: fixed;
             z-index: 2000;
             top: 0; left: 0;
             width: 100%; height: 100%;
-            background: rgba(0,0,0,0.7);
+            background: rgba(0,0,0,0.5);
         }
 
         .rates-modal.show { display: block; }
 
         .rates-modal-content {
-            background: #1a1a2e;
-            border: 1px solid rgba(255,255,255,0.2);
+            background: white;
             margin: 5% auto;
             padding: 30px;
-            border-radius: 15px;
+            border-radius: 20px;
             width: 90%;
-            max-width: 500px;
-            max-height: 80vh;
+            max-width: 480px;
+            max-height: 85vh;
             overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
         }
 
         .rates-modal-content h3 {
-            color: #FFD700;
+            color: #FF69B4;
+            margin-bottom: 5px;
+            font-size: 1.4em;
+        }
+
+        .rates-cost {
+            color: #666;
+            font-size: 0.9em;
             margin-bottom: 20px;
-            font-size: 1.3em;
         }
 
         .rates-table {
             width: 100%;
             border-collapse: collapse;
+            margin-bottom: 20px;
         }
 
         .rates-table th {
-            background: rgba(255,255,255,0.1);
+            background: #FFC0CB;
+            color: white;
             padding: 10px;
             text-align: center;
             font-size: 0.9em;
-            color: #aaa;
         }
 
         .rates-table td {
             padding: 10px;
             text-align: center;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
+            border-bottom: 1px solid #eee;
             font-size: 0.9em;
+            color: #333;
+        }
+
+        .rates-section-title {
+            color: #333;
+            font-weight: bold;
+            margin: 15px 0 8px 0;
+            font-size: 0.95em;
         }
 
         .rates-close-btn {
             display: block;
             width: 100%;
-            margin-top: 20px;
-            padding: 10px;
-            background: rgba(255,255,255,0.1);
-            border: none;
+            padding: 12px;
+            background: linear-gradient(135deg, #FFC0CB, #FF69B4);
             color: white;
-            border-radius: 8px;
+            border: none;
+            border-radius: 10px;
             cursor: pointer;
+            font-size: 1em;
+            font-weight: bold;
         }
 
         @media (max-width: 600px) {
-            .result-card { width: 110px; height: 165px; }
-            .card-emoji  { font-size: 2.2em; }
-            .gacha-title { font-size: 1.5em; }
+            .result-card  { width: 110px; height: 175px; }
+            .char-frame   { width: 65px; height: 65px; }
+            .char-img-wrap { width: 65px; height: 65px; }
+            .gacha-title  { font-size: 1.5em; }
+            .draw-btn     { padding: 15px 40px; font-size: 1.1em; }
+            .sss-grade-text { font-size: 3.5em; }
+            .ss-grade-text  { font-size: 3em; }
+            .s-grade-text   { font-size: 2.5em; }
         }
     </style>
 </head>
 <body>
     <div class="header">
-        <div class="logo">READIN 뽑기</div>
-        <div class="user-menu">
-            <div class="username" onclick="toggleDropdown()"><%= username %> ▼</div>
-            <div class="dropdown" id="dropdown">
-                <a href="/dashboard">대시보드</a>
-                <a href="/logout">로그아웃</a>
+        <div class="logo">READIN</div>
+        <div style="display: flex; align-items: center; gap: 15px;">
+            <div style="color: #FF69B4; font-weight: bold;">
+                💎 <span id="soulStoneAmount"><%= balance %></span>
+            </div>
+            <div class="user-menu">
+                <div class="username" onclick="toggleDropdown()"><%= username %> ▼</div>
+                <div class="dropdown" id="dropdown">
+                    <a href="/dashboard">대시보드</a>
+                    <a href="/collection">📖 도감</a>
+                    <a href="/news">📰 이달의 뉴스</a>
+                    <a href="/enter-code-page">🎁 영혼석 코드</a>
+                    <a href="/ranking">🏆 랭킹</a>
+                    <a href="/my-badges">🎖️ 내 배지</a>
+                    <a href="/logout">로그아웃</a>
+                </div>
             </div>
         </div>
     </div>
 
     <div class="container">
-
-        <!-- 토큰 바 -->
-        <div class="token-bar">
-            <div class="token-bar-left">🪙 보유 토큰</div>
-            <div class="token-bar-amount" id="tokenBalance">
-                <%= balance %> 토큰
-            </div>
+        <div class="balance-bar">
+            <div class="balance-label">💎 보유 영혼석</div>
+            <div class="balance-amount" id="balanceDisplay"><%= balance %>개</div>
         </div>
 
-        <!-- 이달의 뉴스 -->
-        <% if (news && news.length > 0) { %>
-        <div class="news-banner">
-            <h3>📰 이달의 뉴스 — SSS/SS 획득 소식</h3>
-            <div class="news-ticker">
-                <% news.forEach(n => { %>
-                    <div class="news-item">
-                        🎉 <strong><%= n.username %></strong> 님이
-                        <span class="grade-<%= n.grade.toLowerCase() %>">
-                            [<%= n.grade %>] <%= n.character_name %>
-                        </span>
-                        을(를) 획득했습니다!
-                        <span style="color:#666; font-size:0.85em;">
-                            (<%= new Date(n.obtained_at).toLocaleDateString('ko-KR') %>)
-                        </span>
-                    </div>
-                <% }); %>
-            </div>
-        </div>
-        <% } %>
-
-        <!-- 뽑기 메인 -->
         <div class="gacha-main">
-            <div class="gacha-title">✨ 동물 뽑기</div>
-            <div class="gacha-subtitle">토큰을 사용해서 동물 캐릭터를 모아보세요!</div>
+            <div class="gacha-title">✨ 영혼석 뽑기</div>
+            <div class="gacha-subtitle">영혼석을 사용해서 동료를 소환하세요!</div>
 
             <div class="count-control">
                 <button class="count-btn" onclick="changeCount(-1)">−</button>
@@ -667,17 +1040,15 @@
             </div>
 
             <div class="cost-display" id="costDisplay">
-                소비 토큰: <strong>10</strong> 🪙
+                소비 영혼석: <strong>10개</strong>
             </div>
 
             <button class="draw-btn" id="drawBtn" onclick="startDraw()">
-                🎲 뽑기!
+                💎 소환하기
             </button>
-
             <br>
             <button class="rates-btn" onclick="openRates()">📊 확률표 보기</button>
         </div>
-
     </div>
 
     <!-- 뽑기 결과 오버레이 -->
@@ -686,74 +1057,69 @@
         <button class="result-close-btn" onclick="closeResult()">확인</button>
     </div>
 
-    <!-- SSS 이펙트 오버레이 -->
+    <!-- SSS 이펙트 -->
     <div class="sss-overlay" id="sssOverlay">
         <div class="sss-particles" id="sssParticles"></div>
-        <div class="sss-text">✨ SSS ✨</div>
-        <div class="sss-char" id="sssChar"></div>
-        <div style="color: #FFD700; font-size: 1.5em; margin-top: 20px;" id="sssName"></div>
+        <div class="sss-grade-text">✨ SSS ✨</div>
+        <div class="effect-char-frame sss-frame" id="sssFrame">
+            <div class="effect-img-wrap" id="sssImgWrap"></div>
+        </div>
+        <div class="sss-char-name" id="sssCharName"></div>
     </div>
 
-    <!-- SS 이펙트 오버레이 -->
+    <!-- SS 이펙트 -->
     <div class="ss-overlay" id="ssOverlay">
-        <div class="ss-text">💜 SS 💜</div>
-        <div class="ss-char" id="ssChar"></div>
-        <div style="color: #9B59B6; font-size: 1.3em; margin-top: 15px;" id="ssName"></div>
+        <div class="ss-particles" id="ssParticles"></div>
+        <div class="ss-grade-text">💜 SS 💜</div>
+        <div class="effect-char-frame ss-frame" id="ssFrame">
+            <div class="effect-img-wrap" id="ssImgWrap"></div>
+        </div>
+        <div class="ss-char-name" id="ssCharName"></div>
     </div>
 
-    <!-- S 이펙트 오버레이 -->
+    <!-- S 이펙트 -->
     <div class="s-overlay" id="sOverlay">
-        <div class="s-text">💙 S 💙</div>
-        <div class="s-char" id="sChar"></div>
-        <div style="color: #3498DB; font-size: 1.2em; margin-top: 15px;" id="sName"></div>
+        <div class="s-particles" id="sParticles"></div>
+        <div class="s-grade-text">💙 S 💙</div>
+        <div class="effect-char-frame s-frame" id="sFrame">
+            <div class="effect-img-wrap" id="sImgWrap"></div>
+        </div>
+        <div class="s-char-name" id="sCharName"></div>
     </div>
 
     <!-- 확률표 모달 -->
     <div class="rates-modal" id="ratesModal">
         <div class="rates-modal-content">
             <h3>📊 뽑기 확률표</h3>
+            <p class="rates-cost">뽑기 1회 = <strong style="color:#FF69B4;">영혼석 10개</strong></p>
 
-            <p style="color:#aaa; margin-bottom:15px; font-size:0.9em;">
-                뽑기 1회 = <strong style="color:#FFD700;">10토큰</strong>
-            </p>
-
-            <h4 style="color:#ddd; margin-bottom:10px;">🎲 일반 확률</h4>
+            <p class="rates-section-title">🎲 일반 확률</p>
             <table class="rates-table">
                 <thead>
-                    <tr>
-                        <th>등급</th>
-                        <th>확률</th>
-                        <th>캐릭터 수</th>
-                    </tr>
+                    <tr><th>등급</th><th>확률</th><th>캐릭터 수</th></tr>
                 </thead>
                 <tbody>
-                    <tr><td style="color:#FFD700; font-weight:bold;">SSS</td><td>0.05%</td><td>1종</td></tr>
-                    <tr><td style="color:#9B59B6; font-weight:bold;">SS</td><td>1%</td><td>3종</td></tr>
-                    <tr><td style="color:#3498DB; font-weight:bold;">S</td><td>5%</td><td>5종</td></tr>
-                    <tr><td style="color:#27AE60; font-weight:bold;">A</td><td>20%</td><td>7종</td></tr>
-                    <tr><td style="color:#95A5A6; font-weight:bold;">B</td><td>30%</td><td>10종</td></tr>
-                    <tr><td style="color:#636e72; font-weight:bold;">C</td><td>43.95%</td><td>14종</td></tr>
+                    <tr><td style="color:#DAA520;font-weight:bold;">SSS</td><td>0.05%</td><td>1종</td></tr>
+                    <tr><td style="color:#9B59B6;font-weight:bold;">SS</td><td>1%</td><td>3종</td></tr>
+                    <tr><td style="color:#3498DB;font-weight:bold;">S</td><td>5%</td><td>5종</td></tr>
+                    <tr><td style="color:#27AE60;font-weight:bold;">A</td><td>20%</td><td>7종</td></tr>
+                    <tr><td style="color:#888;font-weight:bold;">B</td><td>30%</td><td>10종</td></tr>
+                    <tr><td style="color:#aaa;font-weight:bold;">C</td><td>43.95%</td><td>14종</td></tr>
                 </tbody>
             </table>
 
-            <h4 style="color:#ddd; margin: 20px 0 10px 0;">🔄 중복 시 확률</h4>
-            <p style="color:#aaa; font-size:0.85em; margin-bottom:10px;">
-                중복 캐릭터 획득 시 +1 중복토큰 지급
-            </p>
+            <p class="rates-section-title">🔄 중복 시 확률 (+영혼석 1개 지급)</p>
             <table class="rates-table">
                 <thead>
-                    <tr>
-                        <th>등급</th>
-                        <th>확률</th>
-                    </tr>
+                    <tr><th>등급</th><th>확률</th></tr>
                 </thead>
                 <tbody>
-                    <tr><td style="color:#FFD700; font-weight:bold;">SSS</td><td>0.1%</td></tr>
-                    <tr><td style="color:#9B59B6; font-weight:bold;">SS</td><td>2%</td></tr>
-                    <tr><td style="color:#3498DB; font-weight:bold;">S</td><td>7%</td></tr>
-                    <tr><td style="color:#27AE60; font-weight:bold;">A</td><td>30%</td></tr>
-                    <tr><td style="color:#95A5A6; font-weight:bold;">B</td><td>30%</td></tr>
-                    <tr><td style="color:#636e72; font-weight:bold;">C</td><td>30.9%</td></tr>
+                    <tr><td style="color:#DAA520;font-weight:bold;">SSS</td><td>0.1%</td></tr>
+                    <tr><td style="color:#9B59B6;font-weight:bold;">SS</td><td>2%</td></tr>
+                    <tr><td style="color:#3498DB;font-weight:bold;">S</td><td>7%</td></tr>
+                    <tr><td style="color:#27AE60;font-weight:bold;">A</td><td>30%</td></tr>
+                    <tr><td style="color:#888;font-weight:bold;">B</td><td>30%</td></tr>
+                    <tr><td style="color:#aaa;font-weight:bold;">C</td><td>30.9%</td></tr>
                 </tbody>
             </table>
 
@@ -765,6 +1131,26 @@
         let drawCount = 1;
         let dropdownTimeout;
         const GACHA_COST = <%= gachaCost %>;
+
+        // 이미지 경로
+        function getCharImg(characterId) {
+            return `/images/characters/${characterId}.png`;
+        }
+
+        // 이미지 로드 실패 시 이모지 폴백
+        function setCharImage(wrapEl, characterId, fallbackEmoji) {
+            const img = document.createElement('img');
+            img.src = getCharImg(characterId);
+            img.alt = '';
+            img.onerror = () => {
+                img.remove();
+                const fb = document.createElement('div');
+                fb.className = 'effect-emoji-fallback';
+                fb.textContent = fallbackEmoji || '❓';
+                wrapEl.appendChild(fb);
+            };
+            wrapEl.appendChild(img);
+        }
 
         // 드롭다운
         function toggleDropdown() {
@@ -790,14 +1176,152 @@
             drawCount = Math.max(1, Math.min(10, drawCount + delta));
             document.getElementById('drawCount').textContent = drawCount;
             document.getElementById('costDisplay').innerHTML =
-                `소비 토큰: <strong>${drawCount * GACHA_COST}</strong> 🪙`;
+                `소비 영혼석: <strong>${drawCount * GACHA_COST}개</strong>`;
+        }
+
+        // 파티클 생성 (SSS용 - 불꽃 포함)
+        function createSSSParticles() {
+            const container = document.getElementById('sssParticles');
+            container.innerHTML = '';
+
+            // 일반 파티클
+            for (let i = 0; i < 80; i++) {
+                const p = document.createElement('div');
+                p.className = 'particle';
+                const size = Math.random() * 8 + 4;
+                p.style.cssText = `
+                    width: ${size}px;
+                    height: ${size}px;
+                    left: ${Math.random() * 100}vw;
+                    top: ${Math.random() * 100}vh;
+                    --tx: ${(Math.random() - 0.5) * 400}px;
+                    --ty: ${(Math.random() - 0.5) * 400}px;
+                    background: ${['#FFD700','#FFA500','#FF6600','#FFFF00','#FFE066','#FF4400'][Math.floor(Math.random()*6)]};
+                    animation-delay: ${Math.random() * 0.8}s;
+                    animation-duration: ${1.5 + Math.random()}s;
+                `;
+                container.appendChild(p);
+            }
+
+            // 불꽃 파티클
+            for (let i = 0; i < 40; i++) {
+                const f = document.createElement('div');
+                f.className = 'flame-particle';
+                f.style.cssText = `
+                    left: ${Math.random() * 100}vw;
+                    top: ${50 + Math.random() * 50}vh;
+                    --ty: -${Math.random() * 200 + 100}px;
+                    --rot: ${(Math.random() - 0.5) * 60}deg;
+                    background: linear-gradient(to top,
+                        ${['#FF4400','#FF6600','#FF8C00','#FFA500','#FFD700'][Math.floor(Math.random()*5)]},
+                        rgba(255,255,0,0)
+                    );
+                    animation-delay: ${Math.random() * 1}s;
+                    animation-duration: ${1 + Math.random()}s;
+                `;
+                container.appendChild(f);
+            }
+        }
+
+        // SS 파티클
+        function createSSParticles() {
+            const container = document.getElementById('ssParticles');
+            container.innerHTML = '';
+            for (let i = 0; i < 50; i++) {
+                const p = document.createElement('div');
+                p.className = 'particle';
+                const size = Math.random() * 6 + 3;
+                p.style.cssText = `
+                    width: ${size}px;
+                    height: ${size}px;
+                    left: ${Math.random() * 100}vw;
+                    top: ${Math.random() * 100}vh;
+                    --tx: ${(Math.random() - 0.5) * 300}px;
+                    --ty: ${(Math.random() - 0.5) * 300}px;
+                    background: ${['#9B59B6','#CE93D8','#E1BEE7','#8E44AD','#BA68C8'][Math.floor(Math.random()*5)]};
+                    animation-delay: ${Math.random() * 0.8}s;
+                    animation-duration: ${1.5 + Math.random()}s;
+                `;
+                container.appendChild(p);
+            }
+        }
+
+        // S 파티클
+        function createSParticles() {
+            const container = document.getElementById('sParticles');
+            container.innerHTML = '';
+            for (let i = 0; i < 30; i++) {
+                const p = document.createElement('div');
+                p.className = 'particle';
+                const size = Math.random() * 5 + 2;
+                p.style.cssText = `
+                    width: ${size}px;
+                    height: ${size}px;
+                    left: ${Math.random() * 100}vw;
+                    top: ${Math.random() * 100}vh;
+                    --tx: ${(Math.random() - 0.5) * 200}px;
+                    --ty: ${(Math.random() - 0.5) * 200}px;
+                    background: ${['#3498DB','#85C1E9','#AED6F1','#2980B9'][Math.floor(Math.random()*4)]};
+                    animation-delay: ${Math.random() * 0.8}s;
+                    animation-duration: ${1.5 + Math.random()}s;
+                `;
+                container.appendChild(p);
+            }
+        }
+
+        // SSS 이펙트
+        function showSSSEffect(character) {
+            return new Promise(resolve => {
+                const wrap = document.getElementById('sssImgWrap');
+                wrap.innerHTML = '';
+                setCharImage(wrap, character.id, '🐉');
+                document.getElementById('sssCharName').textContent = character.name;
+                createSSSParticles();
+                document.getElementById('sssOverlay').classList.add('show');
+                setTimeout(() => {
+                    document.getElementById('sssOverlay').classList.remove('show');
+                    resolve();
+                }, 3500);
+            });
+        }
+
+        // SS 이펙트
+        function showSSEffect(character) {
+            return new Promise(resolve => {
+                const wrap = document.getElementById('ssImgWrap');
+                wrap.innerHTML = '';
+                setCharImage(wrap, character.id, '✨');
+                document.getElementById('ssCharName').textContent = character.name;
+                createSSParticles();
+                document.getElementById('ssOverlay').classList.add('show');
+                setTimeout(() => {
+                    document.getElementById('ssOverlay').classList.remove('show');
+                    resolve();
+                }, 2500);
+            });
+        }
+
+        // S 이펙트
+        function showSEffect(character) {
+            return new Promise(resolve => {
+                const wrap = document.getElementById('sImgWrap');
+                wrap.innerHTML = '';
+                setCharImage(wrap, character.id, '⚡');
+                document.getElementById('sCharName').textContent = character.name;
+                createSParticles();
+                document.getElementById('sOverlay').classList.add('show');
+                setTimeout(() => {
+                    document.getElementById('sOverlay').classList.remove('show');
+                    resolve();
+                }, 2000);
+            });
         }
 
         // 뽑기 실행
         async function startDraw() {
             const btn = document.getElementById('drawBtn');
             btn.disabled = true;
-            btn.textContent = '뽑는 중...';
+            btn.textContent = '소환 중...';
 
             try {
                 const res = await fetch('/gacha/draw', {
@@ -810,15 +1334,15 @@
                 if (!data.success) {
                     alert(data.message);
                     btn.disabled = false;
-                    btn.textContent = '🎲 뽑기!';
+                    btn.textContent = '💎 소환하기';
                     return;
                 }
 
-                // 토큰 잔액 업데이트
-                document.getElementById('tokenBalance').textContent =
-                    data.newBalance + ' 토큰';
+                // 영혼석 잔액 업데이트
+                document.getElementById('soulStoneAmount').textContent = data.newBalance;
+                document.getElementById('balanceDisplay').textContent = data.newBalance + '개';
 
-                // 최고 등급 확인 (SSS > SS > S 순으로 이펙트 우선)
+                // 최고 등급 확인 후 이펙트
                 const grades = data.results.map(r => r.character.grade);
                 const topGrade = grades.includes('SSS') ? 'SSS'
                                : grades.includes('SS')  ? 'SS'
@@ -826,84 +1350,26 @@
                                : null;
 
                 if (topGrade === 'SSS') {
-                    const sssChar = data.results.find(r => r.character.grade === 'SSS');
-                    await showSSSEffect(sssChar.character);
+                    const c = data.results.find(r => r.character.grade === 'SSS').character;
+                    await showSSSEffect(c);
                 } else if (topGrade === 'SS') {
-                    const ssChar = data.results.find(r => r.character.grade === 'SS');
-                    await showSSEffect(ssChar.character);
+                    const c = data.results.find(r => r.character.grade === 'SS').character;
+                    await showSSEffect(c);
                 } else if (topGrade === 'S') {
-                    const sChar = data.results.find(r => r.character.grade === 'S');
-                    await showSEffect(sChar.character);
+                    const c = data.results.find(r => r.character.grade === 'S').character;
+                    await showSEffect(c);
                 }
 
                 // 결과 카드 표시
                 showResultCards(data.results);
 
             } catch (err) {
-                alert('뽑기 중 오류가 발생했습니다.');
+                alert('소환 중 오류가 발생했습니다.');
                 console.error(err);
             }
 
             btn.disabled = false;
-            btn.textContent = '🎲 뽑기!';
-        }
-
-        // SSS 전체화면 이펙트
-        function showSSSEffect(character) {
-            return new Promise(resolve => {
-                const overlay = document.getElementById('sssOverlay');
-                document.getElementById('sssChar').textContent = character.emoji;
-                document.getElementById('sssName').textContent = character.name;
-
-                // 파티클 생성
-                const container = document.getElementById('sssParticles');
-                container.innerHTML = '';
-                for (let i = 0; i < 60; i++) {
-                    const p = document.createElement('div');
-                    p.className = 'particle';
-                    p.style.left = Math.random() * 100 + 'vw';
-                    p.style.top  = Math.random() * 100 + 'vh';
-                    p.style.setProperty('--tx', (Math.random() - 0.5) * 300 + 'px');
-                    p.style.setProperty('--ty', (Math.random() - 0.5) * 300 + 'px');
-                    p.style.animationDelay = Math.random() * 1 + 's';
-                    p.style.background = ['#FFD700','#FFA500','#FF6600','#FFFF00'][Math.floor(Math.random()*4)];
-                    container.appendChild(p);
-                }
-
-                overlay.classList.add('show');
-                setTimeout(() => {
-                    overlay.classList.remove('show');
-                    resolve();
-                }, 3000);
-            });
-        }
-
-        // SS 전체화면 이펙트
-        function showSSEffect(character) {
-            return new Promise(resolve => {
-                const overlay = document.getElementById('ssOverlay');
-                document.getElementById('ssChar').textContent = character.emoji;
-                document.getElementById('ssName').textContent = character.name;
-                overlay.classList.add('show');
-                setTimeout(() => {
-                    overlay.classList.remove('show');
-                    resolve();
-                }, 2000);
-            });
-        }
-
-        // S 전체화면 이펙트
-        function showSEffect(character) {
-            return new Promise(resolve => {
-                const overlay = document.getElementById('sOverlay');
-                document.getElementById('sChar').textContent = character.emoji;
-                document.getElementById('sName').textContent = character.name;
-                overlay.classList.add('show');
-                setTimeout(() => {
-                    overlay.classList.remove('show');
-                    resolve();
-                }, 1500);
-            });
+            btn.textContent = '💎 소환하기';
         }
 
         // 결과 카드 표시
@@ -911,38 +1377,67 @@
             const container = document.getElementById('resultCards');
             container.innerHTML = '';
 
+            const gradeColors = {
+                SSS: '#DAA520', SS: '#9B59B6',
+                S: '#3498DB', A: '#27AE60',
+                B: '#95A5A6', C: '#7f8c8d'
+            };
+
             results.forEach((r, i) => {
-                const g = r.character.grade.toLowerCase();
+                const g = r.character.grade;
                 const card = document.createElement('div');
                 card.className = `result-card card-${g}`;
-                card.style.animationDelay = (i * 0.1) + 's';
+                card.style.animationDelay = (i * 0.08) + 's';
+
+                // 원형 프레임
+                const frame = document.createElement('div');
+                frame.className = 'char-frame';
+                frame.style.setProperty('--grade-color', gradeColors[g]);
+
+                const imgWrap = document.createElement('div');
+                imgWrap.className = 'char-img-wrap';
+
+                const img = document.createElement('img');
+                img.src = getCharImg(r.character.id);
+                img.alt = r.character.name;
+                img.onerror = () => {
+                    img.remove();
+                    const fb = document.createElement('div');
+                    fb.className = 'char-emoji-fallback';
+                    fb.textContent = '❓';
+                    imgWrap.appendChild(fb);
+                };
+                imgWrap.appendChild(img);
+                frame.appendChild(imgWrap);
+
                 card.innerHTML = `
-                    ${r.isDuplicate ? '<div class="card-dup">중복 +1🪙</div>' : ''}
-                    ${g === 'sss' ? '<div class="effect-sss"></div>' : ''}
-                    ${g === 'ss'  ? '<div class="effect-ss"></div>'  : ''}
-                    ${g === 's'   ? '<div class="effect-s"></div>'   : ''}
-                    <div class="card-emoji">${r.character.emoji}</div>
-                    <div class="card-grade grade-${g}">${r.character.grade}</div>
+                    ${r.isDuplicate ? '<div class="card-dup">중복 +1💎</div>' : ''}
+                    <div class="card-shine"></div>
+                `;
+                card.appendChild(frame);
+                card.innerHTML += `
+                    <div class="card-grade-badge badge-${g}">${g}</div>
                     <div class="card-name">${r.character.name}</div>
                 `;
+
                 container.appendChild(card);
             });
 
             document.getElementById('resultOverlay').classList.add('show');
         }
 
-        // 결과 닫기
         function closeResult() {
             document.getElementById('resultOverlay').classList.remove('show');
         }
 
-        // 확률표
         function openRates() {
             document.getElementById('ratesModal').classList.add('show');
         }
+
         function closeRates() {
             document.getElementById('ratesModal').classList.remove('show');
         }
+
         window.addEventListener('click', e => {
             if (e.target === document.getElementById('ratesModal')) closeRates();
             if (e.target === document.getElementById('resultOverlay')) closeResult();
