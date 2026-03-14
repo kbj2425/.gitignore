@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>영혼석 코드 - READIN</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #FFC0CB, #FFB6C1);
+            min-height: 100vh;
+        }
+
+        .header {
+            background: white;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo { color: #FFC0CB; font-size: 1.8em; font-weight: bold; }
+
+        .user-menu { position: relative; }
+
+        .username {
+            color: #FFC0CB;
+            font-weight: bold;
+            cursor: pointer;
+            padding: 10px 15px;
+            border-radius: 5px;
+            transition: background 0.3s;
+        }
+
+        .username:hover { background: #f0f0f0; }
+
+        .dropdown {
+            position: absolute;
+            top: 100%; right: 0;
+            background: white;
+            min-width: 180px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            border-radius: 5px;
+            display: none;
+            z-index: 1000;
+        }
+
+        .dropdown.show { display: block; }
+
+        .dropdown a {
+            display: block;
+            padding: 10px 15px;
+            text-decoration: none;
+            color: #333;
+            transition: background 0.3s;
+        }
+
+        .dropdown a:hover { background: #FFC0CB; color: white; }
+
+        .container {
+            max-width: 500px;
+            margin: 60px auto;
+            padding: 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .card-icon { font-size: 4em; margin-bottom: 15px; }
+
+        .card-title {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .card-desc {
+            color: #666;
+            margin-bottom: 10px;
+            font-size: 0.95em;
+            line-height: 1.6;
+        }
+
+        .balance-display {
+            background: linear-gradient(135deg, #FFC0CB, #FF69B4);
+            color: white;
+            padding: 12px 25px;
+            border-radius: 30px;
+            display: inline-block;
+            font-size: 1.1em;
+            font-weight: bold;
+            margin-bottom: 30px;
+        }
+
+        .input-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .code-input {
+            flex: 1;
+            padding: 13px 15px;
+            border: 2px solid #FFC0CB;
+            border-radius: 10px;
+            font-size: 1em;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .code-input:focus { border-color: #FF69B4; }
+
+        .submit-btn {
+            background: linear-gradient(135deg, #FFC0CB, #FF69B4);
+            color: white;
+            border: none;
+            padding: 13px 25px;
+            border-radius: 10px;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: opacity 0.3s;
+            white-space: nowrap;
+        }
+
+        .submit-btn:hover { opacity: 0.85; }
+
+        .result {
+            min-height: 24px;
+            font-size: 0.95em;
+            margin-top: 5px;
+        }
+
+        .result.success { color: #28a745; }
+        .result.error   { color: #dc3545; }
+
+        .back-btn {
+            display: inline-block;
+            margin-top: 25px;
+            background: #6c757d;
+            color: white;
+            padding: 10px 25px;
+            border-radius: 8px;
+            text-decoration: none;
+            transition: background 0.3s;
+        }
+
+        .back-btn:hover { background: #545b62; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">READIN</div>
+        <div style="display: flex; align-items: center; gap: 15px;">
+            <div style="color: #FF69B4; font-weight: bold;">
+                💎 <span id="soulStoneAmount"><%= balance %></span>
+            </div>
+            <div class="user-menu">
+                <div class="username" onclick="toggleDropdown()"><%= username %> ▼</div>
+                <div class="dropdown" id="dropdown">
+                    <a href="/gacha">💎 영혼석 뽑기</a>
+                    <a href="/collection">📖 도감</a>
+                    <a href="/news">📰 이달의 뉴스</a>
+                    <a href="/enter-code-page">🎁 영혼석 코드</a>
+                    <a href="/ranking">🏆 랭킹</a>
+                    <a href="/my-badges">🎖️ 내 배지</a>
+                    <a href="/change-password">비밀번호 변경</a>
+                    <a href="/logout">로그아웃</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="card">
+            <div class="card-icon">🎁</div>
+            <div class="card-title">영혼석 코드</div>
+            <p class="card-desc">
+                특별 코드를 입력하면 영혼석을 받을 수 있어요!<br>
+                코드는 무제한으로 사용 가능합니다.
+            </p>
+
+            <div class="balance-display">
+                💎 현재 보유: <span id="balanceDisplay"><%= balance %></span>개
+            </div>
+
+            <div class="input-row">
+                <input
+                    type="text"
+                    class="code-input"
+                    id="codeInput"
+                    placeholder="코드를 입력하세요"
+                    onkeypress="if(event.key==='Enter') submitCode()"
+                >
+                <button class="submit-btn" onclick="submitCode()">확인</button>
+            </div>
+
+            <div class="result" id="result"></div>
+
+            <a href="/dashboard" class="back-btn">대시보드로 돌아가기</a>
+        </div>
+    </div>
+
+    <script>
+        let dropdownTimeout;
+
+        function toggleDropdown() {
+            document.getElementById('dropdown').classList.toggle('show');
+        }
+
+        document.querySelector('.user-menu').addEventListener('mouseenter', () => {
+            clearTimeout(dropdownTimeout);
+            document.getElementById('dropdown').classList.add('show');
+        });
+
+        document.querySelector('.user-menu').addEventListener('mouseleave', () => {
+            dropdownTimeout = setTimeout(() => {
+                document.getElementById('dropdown').classList.remove('show');
+            }, 300);
+        });
+
+        document.addEventListener('click', e => {
+            if (!document.querySelector('.user-menu').contains(e.target)) {
+                document.getElementById('dropdown').classList.remove('show');
+            }
+        });
+
+        async function submitCode() {
+            const code = document.getElementById('codeInput').value.trim();
+            const resultDiv = document.getElementById('result');
+
+            if (!code) {
+                resultDiv.className = 'result error';
+                resultDiv.textContent = '코드를 입력해주세요.';
+                return;
+            }
+
+            try {
+                const res = await fetch('/enter-code', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ code })
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    resultDiv.className = 'result success';
+                    resultDiv.textContent = `✅ ${data.message}`;
+                    document.getElementById('codeInput').value = '';
+                    // 잔액 업데이트
+                    document.getElementById('balanceDisplay').textContent = data.soulStoneBalance;
+                    document.getElementById('soulStoneAmount').textContent = data.soulStoneBalance;
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.textContent = `❌ ${data.message}`;
+                }
+            } catch (err) {
+                resultDiv.className = 'result error';
+                resultDiv.textContent = '서버 오류가 발생했습니다.';
+            }
+        }
+    </script>
+</body>
+</html>
