@@ -19,13 +19,12 @@ const memoryDB = {
     badges: [],
     titles: [],
     personalGoals: [],
-   // ✅ 토큰 시스템
-    tokens: [],      // { user_id, amount, updated_at }
-    tokenLogs: [],   // { id, user_id, amount, reason, created_at }
-    usedCodes: [],   // { user_id, code, used_at }
-    // ✅ 뽑기 시스템
-    collections: [], // { user_id, character_id, count, first_obtained_at }
-    gachaNews: []    // { id, user_id, username, character_id, character_name, grade, obtained_at }
+    // 영혼석 시스템
+    tokens: [],       // { user_id, amount, updated_at }
+    tokenLogs: [],    // { id, user_id, amount, reason, created_at }
+    // 뽑기 시스템
+    collections: [],  // { user_id, character_id, count, first_obtained_at }
+    gachaNews: []     // { id, user_id, username, character_name, grade, obtained_at }
 };
 
 let userIdCounter = 1;
@@ -383,6 +382,8 @@ async function autoAwardBadges() {
             // 랭킹 토큰 보상 정의
             const rankingTokens = { 1: 25, 2: 20, 3: 15, 4: 10, 5: 5 };
 
+            const rankingStones = { 1: 25, 2: 20, 3: 15, 4: 10, 5: 5 };
+
             badgeTypes.forEach((badge, index) => {
                 if (rankings[index]) {
                     memoryDB.badges.push({
@@ -397,11 +398,11 @@ async function autoAwardBadges() {
                         awarded_at: new Date().toISOString()
                     });
 
-                    // ✅ 랭킹 토큰 지급
-                    const tokenReward = rankingTokens[badge.rank] || 0;
-                    if (tokenReward > 0) {
-                        updateToken(rankings[index].user_id, tokenReward, 'ranking');
-                        console.log(`💰 ${badge.rank}위 토큰 지급: ${rankings[index].username} +${tokenReward}토큰`);
+                    // 랭킹 영혼석 지급
+                    const stones = rankingStones[badge.rank] || 0;
+                    if (stones > 0) {
+                        updateToken(rankings[index].user_id, stones, 'ranking');
+                        console.log(`💎 ${badge.rank}위 영혼석 지급: ${rankings[index].username} +${stones}`);
                     }
 
                     console.log(`🏆 ${badge.rank}위: ${rankings[index].username} - ${badge.badge_name}`);
@@ -581,90 +582,117 @@ function getRecentMonths(count) {
 // ✅ 캐릭터 데이터
 const CHARACTERS = [
     // SSS
-    { id: 'sss_1', grade: 'SSS', name: '황룡', emoji: '🐉', color: '#FFD700', description: '세계관의 중심을 지키는 절대자. 모든 속성을 다스리는 유일무이한 존재.' },
+    { id: 'sss_1', grade: 'SSS', name: '황룡', color: '#FFD700', description: '세계관의 중심을 지키는 절대자. 모든 속성을 다스리는 유일무이한 존재.' },
     // SS
-    { id: 'ss_1', grade: 'SS', name: '해태', emoji: '🦁', color: '#9B59B6', description: '시비곡직을 가리는 정의의 수호수.' },
-    { id: 'ss_2', grade: 'SS', name: '피닉스', emoji: '🦅', color: '#9B59B6', description: '영원히 타오르는 불꽃의 화신.' },
-    { id: 'ss_3', grade: 'SS', name: '백호', emoji: '🐯', color: '#9B59B6', description: '서쪽을 다스리는 살육과 투쟁의 신수.' },
+    { id: 'ss_1', grade: 'SS', name: '해태', color: '#9B59B6', description: '시비곡직을 가리는 정의의 수호수.' },
+    { id: 'ss_2', grade: 'SS', name: '피닉스', color: '#9B59B6', description: '영원히 타오르는 불꽃의 화신.' },
+    { id: 'ss_3', grade: 'SS', name: '백호', color: '#9B59B6', description: '서쪽을 다스리는 살육과 투쟁의 신수.' },
     // S
-    { id: 's_1', grade: 'S', name: '구미호', emoji: '🦊', color: '#3498DB', description: '아홉 개의 꼬리를 가진 영악한 환술사.' },
-    { id: 's_2', grade: 'S', name: '그리핀', emoji: '🦁', color: '#3498DB', description: '사자의 몸과 독수리의 날개를 가진 하늘의 제왕.' },
-    { id: 's_3', grade: 'S', name: '유니콘', emoji: '🦄', color: '#3498DB', description: '순결한 뿔로 정화의 힘을 쓰는 치유의 영물.' },
-    { id: 's_4', grade: 'S', name: '현무', emoji: '🐢', color: '#3498DB', description: '거대한 거북과 뱀이 합쳐진 철벽의 방어수.' },
-    { id: 's_5', grade: 'S', name: '켈베로스', emoji: '🐕', color: '#3498DB', description: '지옥의 문을 지키는 머리 세 개 달린 검은 개.' },
+    { id: 's_1', grade: 'S', name: '구미호', color: '#3498DB', description: '아홉 개의 꼬리를 가진 영악한 환술사.' },
+    { id: 's_2', grade: 'S', name: '그리핀', color: '#3498DB', description: '사자의 몸과 독수리의 날개를 가진 하늘의 제왕.' },
+    { id: 's_3', grade: 'S', name: '유니콘', color: '#3498DB', description: '순결한 뿔로 정화의 힘을 쓰는 치유의 영물.' },
+    { id: 's_4', grade: 'S', name: '현무', color: '#3498DB', description: '거대한 거북과 뱀이 합쳐진 철벽의 방어수.' },
+    { id: 's_5', grade: 'S', name: '켈베로스', color: '#3498DB', description: '지옥의 문을 지키는 머리 세 개 달린 검은 개.' },
     // A
-    { id: 'a_1', grade: 'A', name: '전투 코끼리', emoji: '🐘', color: '#27AE60', description: '단단한 갑주를 입은 중장갑 전사.' },
-    { id: 'a_2', grade: 'A', name: '그림자 표범', emoji: '🐆', color: '#27AE60', description: '보이지 않는 속도로 적의 뒤를 노리는 암살자.' },
-    { id: 'a_3', grade: 'A', name: '왕관 독수리', emoji: '🦅', color: '#27AE60', description: '높은 시야로 전장을 지휘하는 명사수.' },
-    { id: 'a_4', grade: 'A', name: '화염 갈기 사자', emoji: '🦁', color: '#27AE60', description: '기세등등한 포효로 아군의 사기를 높이는 리더.' },
-    { id: 'a_5', grade: 'A', name: '서리 늑대', emoji: '🐺', color: '#27AE60', description: '냉기를 뿜으며 무리지어 사냥하는 전사.' },
-    { id: 'a_6', grade: 'A', name: '강철 뿔 코뿔소', emoji: '🦏', color: '#27AE60', description: '무엇이든 뚫어버리는 돌격 대장.' },
-    { id: 'a_7', grade: 'A', name: '환상 나비', emoji: '🦋', color: '#27AE60', description: '가루를 날려 적을 혼란에 빠뜨리는 서포터.' },
+    { id: 'a_1', grade: 'A', name: '전투 코끼리', color: '#27AE60', description: '단단한 갑주를 입은 중장갑 전사.' },
+    { id: 'a_2', grade: 'A', name: '그림자 표범', color: '#27AE60', description: '보이지 않는 속도로 적의 뒤를 노리는 암살자.' },
+    { id: 'a_3', grade: 'A', name: '왕관 독수리', color: '#27AE60', description: '높은 시야로 전장을 지휘하는 명사수.' },
+    { id: 'a_4', grade: 'A', name: '화염 갈기 사자', color: '#27AE60', description: '기세등등한 포효로 아군의 사기를 높이는 리더.' },
+    { id: 'a_5', grade: 'A', name: '서리 늑대', color: '#27AE60', description: '냉기를 뿜으며 무리지어 사냥하는 전사.' },
+    { id: 'a_6', grade: 'A', name: '강철 뿔 코뿔소', color: '#27AE60', description: '무엇이든 뚫어버리는 돌격 대장.' },
+    { id: 'a_7', grade: 'A', name: '환상 나비', color: '#27AE60', description: '가루를 날려 적을 혼란에 빠뜨리는 서포터.' },
     // B
-    { id: 'b_1', grade: 'B', name: '불곰', emoji: '🐻', color: '#ECF0F1', description: '묵직한 앞발 한 방으로 상황을 정리하는 든든한 전사.' },
-    { id: 'b_2', grade: 'B', name: '사막 여우', emoji: '🦊', color: '#ECF0F1', description: '뜨거운 모래 위에서도 날렵하게 움직이는 생존의 달인.' },
-    { id: 'b_3', grade: 'B', name: '정찰매', emoji: '🦅', color: '#ECF0F1', description: '넓은 하늘을 날며 적의 위치를 가장 먼저 알아채는 눈.' },
-    { id: 'b_4', grade: 'B', name: '숲속 사슴', emoji: '🦌', color: '#ECF0F1', description: '빠른 발과 예민한 감각으로 아군에게 위험을 알리는 전령.' },
-    { id: 'b_5', grade: 'B', name: '훈련된 군견', emoji: '🐕', color: '#ECF0F1', description: '오랜 훈련으로 명령에 충실하게 움직이는 믿음직한 동료.' },
-    { id: 'b_6', grade: 'B', name: '멧돼지 돌격병', emoji: '🐗', color: '#ECF0F1', description: '앞만 보고 돌진하는 거칠고 단순한 돌격 요원.' },
-    { id: 'b_7', grade: 'B', name: '약초 캐는 너구리', emoji: '🦝', color: '#ECF0F1', description: '산속 구석구석을 누비며 아군의 회복을 돕는 조력자.' },
-    { id: 'b_8', grade: 'B', name: '바다 거북', emoji: '🐢', color: '#ECF0F1', description: '단단한 등껍질로 버텨내는 느리지만 꾸준한 수호자.' },
-    { id: 'b_9', grade: 'B', name: '전기 뱀장어', emoji: '🐍', color: '#ECF0F1', description: '몸에 전기를 띠어 가까이 오는 적을 찌릿하게 만드는 함정.' },
-    { id: 'b_10', grade: 'B', name: '산악 염소', emoji: '🐐', color: '#ECF0F1', description: '험한 산길도 거뜬히 오르는 발 빠른 고지전 전문가.' },
+    { id: 'b_1',  grade: 'B', name: '불곰',            color: '#BDC3C7', description: '묵직한 앞발 한 방으로 상황을 정리하는 든든한 전사.' },
+    { id: 'b_2',  grade: 'B', name: '사막 여우',        color: '#BDC3C7', description: '뜨거운 모래 위에서도 날렵하게 움직이는 생존의 달인.' },
+    { id: 'b_3',  grade: 'B', name: '정찰매',           color: '#BDC3C7', description: '넓은 하늘을 날며 적의 위치를 가장 먼저 알아채는 눈.' },
+    { id: 'b_4',  grade: 'B', name: '숲속 사슴',        color: '#BDC3C7', description: '빠른 발과 예민한 감각으로 아군에게 위험을 알리는 전령.' },
+    { id: 'b_5',  grade: 'B', name: '훈련된 군견',      color: '#BDC3C7', description: '오랜 훈련으로 명령에 충실하게 움직이는 믿음직한 동료.' },
+    { id: 'b_6',  grade: 'B', name: '멧돼지 돌격병',    color: '#BDC3C7', description: '앞만 보고 돌진하는 거칠고 단순한 돌격 요원.' },
+    { id: 'b_7',  grade: 'B', name: '약초 캐는 너구리', color: '#BDC3C7', description: '산속 구석구석을 누비며 아군의 회복을 돕는 조력자.' },
+    { id: 'b_8',  grade: 'B', name: '바다 거북',        color: '#BDC3C7', description: '단단한 등껍질로 버텨내는 느리지만 꾸준한 수호자.' },
+    { id: 'b_9',  grade: 'B', name: '전기 뱀장어',      color: '#BDC3C7', description: '몸에 전기를 띠어 가까이 오는 적을 찌릿하게 만드는 함정.' },
+    { id: 'b_10', grade: 'B', name: '산악 염소',        color: '#BDC3C7', description: '험한 산길도 거뜬히 오르는 발 빠른 고지전 전문가.' },
     // C
-    { id: 'c_1', grade: 'C', name: '들쥐', emoji: '🐭', color: '#95A5A6', description: '작고 빠르게 돌아다니며 이것저것 주워오는 귀여운 심부름꾼.' },
-    { id: 'c_2', grade: 'C', name: '박쥐', emoji: '🦇', color: '#95A5A6', description: '어두운 곳을 좋아하는 야행성 꼬마 정찰대원.' },
-    { id: 'c_3', grade: 'C', name: '길고양이', emoji: '🐱', color: '#95A5A6', description: '제멋대로지만 가끔 기분 좋을 때 도움을 주는 자유로운 녀석.' },
-    { id: 'c_4', grade: 'C', name: '시골 강아지', emoji: '🐶', color: '#95A5A6', description: '마냥 신나서 꼬리를 흔드는 아직 훈련이 덜 된 애기.' },
-    { id: 'c_5', grade: 'C', name: '파랑새', emoji: '🐦', color: '#95A5A6', description: '파란 날개로 하늘을 날지만 전투엔 크게 도움이 안 되는 마스코트.' },
-    { id: 'c_6', grade: 'C', name: '아기 토끼', emoji: '🐰', color: '#95A5A6', description: '폴짝폴짝 뛰어다니는 귀여움 담당. 전투력은 물음표.' },
-    { id: 'c_7', grade: 'C', name: '두더지', emoji: '🐾', color: '#95A5A6', description: '땅 속을 파고들어 가끔 유용한 것들을 발견해오는 땅굴 전문가.' },
-    { id: 'c_8', grade: 'C', name: '떠돌이 개', emoji: '🐕', color: '#95A5A6', description: '정처 없이 돌아다니다 우연히 팀에 합류한 유랑 멤버.' },
-    { id: 'c_9', grade: 'C', name: '고슴도치', emoji: '🦔', color: '#95A5A6', description: '건드리면 가시로 찌르지만 평소엔 그냥 굴러다니는 소심쟁이.' },
-    { id: 'c_10', grade: 'C', name: '다람쥐', emoji: '🐿️', color: '#95A5A6', description: '먹이를 열심히 모으다 보면 가끔 아이템도 챙겨오는 부지런한 녀석.' },
-    { id: 'c_11', grade: 'C', name: '개구리', emoji: '🐸', color: '#95A5A6', description: '폴짝 뛰는 것 말고는 특기가 없지만 분위기를 살리는 개그 담당.' },
-    { id: 'c_12', grade: 'C', name: '까마귀', emoji: '🐦‍⬛', color: '#95A5A6', description: '영리하지만 약간 불길한 느낌을 풍기는 수수께끼 새.' },
-    { id: 'c_13', grade: 'C', name: '올챙이', emoji: '🐟', color: '#95A5A6', description: '아직 개구리도 못 된 성장 중인 꼬마. 잠재력은 무한대?' },
-    { id: 'c_14', grade: 'C', name: '병아리', emoji: '🐥', color: '#95A5A6', description: '삐약삐약 울기만 해도 보는 사람을 기분 좋게 만드는 귀염둥이.' },
+    { id: 'c_1',  grade: 'C', name: '들쥐',      color: '#95A5A6', description: '작고 빠르게 돌아다니며 이것저것 주워오는 귀여운 심부름꾼.' },
+    { id: 'c_2',  grade: 'C', name: '박쥐',      color: '#95A5A6', description: '어두운 곳을 좋아하는 야행성 꼬마 정찰대원.' },
+    { id: 'c_3',  grade: 'C', name: '길고양이',  color: '#95A5A6', description: '제멋대로지만 가끔 기분 좋을 때 도움을 주는 자유로운 녀석.' },
+    { id: 'c_4',  grade: 'C', name: '시골 강아지', color: '#95A5A6', description: '마냥 신나서 꼬리를 흔드는 아직 훈련이 덜 된 애기.' },
+    { id: 'c_5',  grade: 'C', name: '파랑새',    color: '#95A5A6', description: '파란 날개로 하늘을 날지만 전투엔 크게 도움이 안 되는 마스코트.' },
+    { id: 'c_6',  grade: 'C', name: '아기 토끼', color: '#95A5A6', description: '폴짝폴짝 뛰어다니는 귀여움 담당. 전투력은 물음표.' },
+    { id: 'c_7',  grade: 'C', name: '두더지',    color: '#95A5A6', description: '땅 속을 파고들어 가끔 유용한 것들을 발견해오는 땅굴 전문가.' },
+    { id: 'c_8',  grade: 'C', name: '떠돌이 개', color: '#95A5A6', description: '정처 없이 돌아다니다 우연히 팀에 합류한 유랑 멤버.' },
+    { id: 'c_9',  grade: 'C', name: '고슴도치',  color: '#95A5A6', description: '건드리면 가시로 찌르지만 평소엔 그냥 굴러다니는 소심쟁이.' },
+    { id: 'c_10', grade: 'C', name: '다람쥐',    color: '#95A5A6', description: '먹이를 열심히 모으다 보면 가끔 아이템도 챙겨오는 부지런한 녀석.' },
+    { id: 'c_11', grade: 'C', name: '개구리',    color: '#95A5A6', description: '폴짝 뛰는 것 말고는 특기가 없지만 분위기를 살리는 개그 담당.' },
+    { id: 'c_12', grade: 'C', name: '까마귀',    color: '#95A5A6', description: '영리하지만 약간 불길한 느낌을 풍기는 수수께끼 새.' },
+    { id: 'c_13', grade: 'C', name: '올챙이',    color: '#95A5A6', description: '아직 개구리도 못 된 성장 중인 꼬마. 잠재력은 무한대?' },
+    { id: 'c_14', grade: 'C', name: '병아리',    color: '#95A5A6', description: '삐약삐약 울기만 해도 보는 사람을 기분 좋게 만드는 귀염둥이.' },
 ];
 
-// ✅ 뽑기 확률 설정
+// ✅ 뽑기 확률
 const GACHA_RATES = {
-    // 첫 뽑기 확률
     normal: [
-        { grade: 'SSS', rate: 0.0005 },  // 0.05%
-        { grade: 'SS',  rate: 0.01 },    // 1%
-        { grade: 'S',   rate: 0.05 },    // 5%
-        { grade: 'A',   rate: 0.20 },    // 20%
-        { grade: 'B',   rate: 0.30 },    // 30%
-        { grade: 'C',   rate: 0.4395 },  // 43.95%
+        { grade: 'SSS', rate: 0.0005 },
+        { grade: 'SS',  rate: 0.01   },
+        { grade: 'S',   rate: 0.05   },
+        { grade: 'A',   rate: 0.20   },
+        { grade: 'B',   rate: 0.30   },
+        { grade: 'C',   rate: 0.4395 },
     ],
-    // 중복 뽑기 확률 (이미 보유한 캐릭터 나왔을 때)
     duplicate: [
-        { grade: 'SSS', rate: 0.001 },   // 0.1%
-        { grade: 'SS',  rate: 0.02 },    // 2%
-        { grade: 'S',   rate: 0.07 },    // 7%
-        { grade: 'A',   rate: 0.30 },    // 30%
-        { grade: 'B',   rate: 0.30 },    // 30%
-        { grade: 'C',   rate: 0.309 },   // 30.9%
+        { grade: 'SSS', rate: 0.001  },
+        { grade: 'SS',  rate: 0.02   },
+        { grade: 'S',   rate: 0.07   },
+        { grade: 'A',   rate: 0.30   },
+        { grade: 'B',   rate: 0.30   },
+        { grade: 'C',   rate: 0.309  },
     ]
 };
 
-const GACHA_COST = 10; // 뽑기 1회 토큰 비용
+const GACHA_COST = 10;
 
-// 사용자 토큰 잔액 조회 함수
+// ✅ 영혼석 잔액 조회
 function getTokenBalance(userId) {
-    const tokenRecord = memoryDB.tokens.find(t => t.user_id === userId);
-    return tokenRecord ? tokenRecord.amount : 0;
+    const record = memoryDB.tokens.find(t => t.user_id === userId);
+    return record ? record.amount : 0;
 }
 
-// 등급에 맞는 랜덤 캐릭터 1개 뽑기
-function pickCharacterByGrade(grade) {
-    const pool = CHARACTERS.filter(c => c.grade === grade);
-    return pool[Math.floor(Math.random() * pool.length)];
+// ✅ 영혼석 지급/차감
+function updateToken(userId, amount, reason) {
+    let record = memoryDB.tokens.find(t => t.user_id === userId);
+    if (record) {
+        record.amount += amount;
+        if (record.amount < 0) record.amount = 0;
+        record.updated_at = new Date().toISOString();
+    } else {
+        memoryDB.tokens.push({
+            user_id: userId,
+            amount: Math.max(0, amount),
+            updated_at: new Date().toISOString()
+        });
+        record = memoryDB.tokens[memoryDB.tokens.length - 1];
+    }
+    memoryDB.tokenLogs.push({
+        id: tokenLogIdCounter++,
+        user_id: userId,
+        amount,
+        reason,
+        created_at: new Date().toISOString()
+    });
+    return record.amount;
 }
 
-// 확률 테이블로 등급 결정
+// ✅ 이름 마스킹 (가운데 글자 → *, 2글자면 뒷글자)
+function maskName(name) {
+    if (name.length === 2) return name[0] + '*';
+    if (name.length >= 3) {
+        const mid = Math.floor(name.length / 2);
+        return name.slice(0, mid) + '*' + name.slice(mid + 1);
+    }
+    return name;
+}
+
+// ✅ 등급 결정
 function rollGrade(rateTable) {
     const rand = Math.random();
     let cumulative = 0;
@@ -672,38 +700,35 @@ function rollGrade(rateTable) {
         cumulative += entry.rate;
         if (rand < cumulative) return entry.grade;
     }
-    // 부동소수점 오차 대비 마지막 등급 반환
     return rateTable[rateTable.length - 1].grade;
 }
 
-// 뽑기 1회 실행
-function doGacha(userId) {
-    // 유저 보유 컬렉션 확인
-    const myCollection = memoryDB.collections.filter(c => c.user_id === userId);
-    const myCharacterIds = myCollection.map(c => c.character_id);
+// ✅ 등급에 맞는 랜덤 캐릭터 선택
+function pickCharacterByGrade(grade) {
+    const pool = CHARACTERS.filter(c => c.grade === grade);
+    return pool[Math.floor(Math.random() * pool.length)];
+}
 
-    // 등급 결정 (일반 확률)
+// ✅ 뽑기 1회 실행
+function doGacha(userId) {
+    const myIds = memoryDB.collections
+        .filter(c => c.user_id === userId)
+        .map(c => c.character_id);
+
     const grade = rollGrade(GACHA_RATES.normal);
     let character = pickCharacterByGrade(grade);
-
-    const isDuplicate = myCharacterIds.includes(character.id);
+    const isDuplicate = myIds.includes(character.id);
 
     if (isDuplicate) {
-        // 중복이면 중복 확률로 다시 등급 결정 후 캐릭터 선택
         const dupGrade = rollGrade(GACHA_RATES.duplicate);
         character = pickCharacterByGrade(dupGrade);
-
-        // 중복 토큰 +1 지급
         updateToken(userId, 1, 'gacha_refund');
-
-        // 중복 컬렉션 카운트 증가
         const existing = memoryDB.collections.find(
             c => c.user_id === userId && c.character_id === character.id
         );
         if (existing) {
             existing.count++;
         } else {
-            // 새 캐릭터면 컬렉션에 추가
             memoryDB.collections.push({
                 user_id: userId,
                 character_id: character.id,
@@ -711,11 +736,9 @@ function doGacha(userId) {
                 first_obtained_at: new Date().toISOString()
             });
         }
-
-        return { character, isDuplicate: true, dupTokenEarned: 1 };
+        return { character, isDuplicate: true };
     }
 
-    // 신규 캐릭터 컬렉션에 추가
     memoryDB.collections.push({
         user_id: userId,
         character_id: character.id,
@@ -723,7 +746,6 @@ function doGacha(userId) {
         first_obtained_at: new Date().toISOString()
     });
 
-    // SSS, SS 뽑으면 뉴스 등록
     if (grade === 'SSS' || grade === 'SS') {
         const user = memoryDB.users.find(u => u.id === userId);
         memoryDB.gachaNews.push({
@@ -737,40 +759,7 @@ function doGacha(userId) {
         });
     }
 
-    return { character, isDuplicate: false, dupTokenEarned: 0 };
-}
-
-// 토큰 지급/차감 함수
-// reason 예시: 'training', 'ranking', 'code', 'admin', 'gacha_refund'
-function updateToken(userId, amount, reason) {
-    let tokenRecord = memoryDB.tokens.find(t => t.user_id === userId);
-
-    if (tokenRecord) {
-        tokenRecord.amount += amount;
-        tokenRecord.updated_at = new Date().toISOString();
-    } else {
-        // 최초 토큰 레코드 생성
-        memoryDB.tokens.push({
-            user_id: userId,
-            amount: Math.max(0, amount),
-            updated_at: new Date().toISOString()
-        });
-        tokenRecord = memoryDB.tokens[memoryDB.tokens.length - 1];
-    }
-
-    // 잔액이 0 아래로 내려가지 않도록 보정
-    if (tokenRecord.amount < 0) tokenRecord.amount = 0;
-
-    // 토큰 변동 로그 기록
-    memoryDB.tokenLogs.push({
-        id: tokenLogIdCounter++,
-        user_id: userId,
-        amount,
-        reason,
-        created_at: new Date().toISOString()
-    });
-
-    return tokenRecord.amount;
+    return { character, isDuplicate: false };
 }
 
 // Middleware
@@ -1011,7 +1000,7 @@ app.post('/submit-answer', requireAuth, async (req, res) => {
             await query("INSERT INTO daily_attempts (user_id, date, attempts) VALUES ($1, $2, 1)", [userId, today]);
         }
         
-       // ✅ 훈련 완료 보상: +5토큰 지급
+        // 훈련 완료 +5 영혼석
         const newBalance = updateToken(userId, 5, 'training');
 
         res.json({
@@ -1020,8 +1009,8 @@ app.post('/submit-answer', requireAuth, async (req, res) => {
             actualCount,
             userAnswer,
             remainingAttempts: remainingAttempts - 1,
-            tokenEarned: 5,
-            tokenBalance: newBalance
+            soulStoneEarned: 5,
+            soulStoneBalance: newBalance
         });
     } catch (error) {
         console.error('훈련 답변 제출 오류:', error);
@@ -1292,6 +1281,8 @@ app.post('/admin/award-badges', requireAdmin, async (req, res) => {
        // 랭킹 토큰 보상 정의
         const rankingTokens = { 1: 25, 2: 20, 3: 15, 4: 10, 5: 5 };
 
+        const rankingStones = { 1: 25, 2: 20, 3: 15, 4: 10, 5: 5 };
+
         badgeTypes.forEach((badge, index) => {
             if (rankings[index]) {
                 memoryDB.badges.push({
@@ -1306,11 +1297,9 @@ app.post('/admin/award-badges', requireAdmin, async (req, res) => {
                     awarded_at: new Date().toISOString()
                 });
 
-                // ✅ 랭킹 토큰 지급
-                const tokenReward = rankingTokens[badge.rank] || 0;
-                if (tokenReward > 0) {
-                    updateToken(rankings[index].user_id, tokenReward, 'ranking');
-                }
+                // 랭킹 영혼석 지급
+                const stones = rankingStones[badge.rank] || 0;
+                if (stones > 0) updateToken(rankings[index].user_id, stones, 'ranking');
             }
         });
         
@@ -1675,119 +1664,155 @@ app.post('/admin/force-change-password', requireAdmin, async (req, res) => {
     }
 });
 
-// 특정 코드 입력 시 토큰 지급
+// 영혼석 잔액 조회
+app.get('/my-tokens', requireAuth, (req, res) => {
+    if (req.session.isAdmin) {
+        return res.json({ success: false, message: '관리자는 영혼석이 없습니다.' });
+    }
+    const balance = getTokenBalance(req.session.userId);
+    const logs = memoryDB.tokenLogs
+        .filter(l => l.user_id === req.session.userId)
+        .reverse();
+    res.json({ success: true, balance, logs });
+});
+
+// 영혼석 코드 입력 (무한 사용)
 app.post('/enter-code', requireAuth, (req, res) => {
     if (req.session.isAdmin) {
         return res.json({ success: false, message: '관리자는 코드를 사용할 수 없습니다.' });
     }
-
     const { code } = req.body;
-    const userId = req.session.userId;
-
-    // 유효한 코드 목록
-    const validCodes = {
-        'rd12972710': 1000
-    };
+    const validCodes = { 'rd12972710': 1000 };
 
     if (!validCodes[code]) {
         return res.json({ success: false, message: '유효하지 않은 코드입니다.' });
     }
 
-    // 중복 사용 확인
-    const alreadyUsed = memoryDB.usedCodes.find(
-        uc => uc.user_id === userId && uc.code === code
-    );
-
-    if (alreadyUsed) {
-        return res.json({ success: false, message: '이미 사용한 코드입니다.' });
-    }
-
-    // 코드 사용 기록 저장
-    memoryDB.usedCodes.push({
-        user_id: userId,
-        code,
-        used_at: new Date().toISOString()
-    });
-
-    // 토큰 지급
     const rewardAmount = validCodes[code];
-    const newBalance = updateToken(userId, rewardAmount, 'code');
+    const newBalance = updateToken(req.session.userId, rewardAmount, 'code');
 
     res.json({
         success: true,
-        message: `코드 입력 성공! ${rewardAmount}토큰이 지급되었습니다.`,
-        tokenEarned: rewardAmount,
-        tokenBalance: newBalance
+        message: `코드 입력 성공! 영혼석 ${rewardAmount}개가 지급되었습니다.`,
+        soulStoneEarned: rewardAmount,
+        soulStoneBalance: newBalance
+    });
+});
+
+// 관리자 영혼석 지급
+app.post('/admin/give-token', requireAdmin, (req, res) => {
+    const { userId, amount } = req.body;
+    const parsedAmount = parseInt(amount);
+
+    if (!parsedAmount || parsedAmount <= 0) {
+        return res.json({ success: false, message: '유효한 수량을 입력하세요.' });
+    }
+
+    const targetUser = memoryDB.users.find(u => u.id === parseInt(userId) && !u.is_admin);
+    if (!targetUser) {
+        return res.json({ success: false, message: '사용자를 찾을 수 없습니다.' });
+    }
+
+    const newBalance = updateToken(parseInt(userId), parsedAmount, 'admin');
+    res.json({
+        success: true,
+        message: `${targetUser.username}에게 영혼석 ${parsedAmount}개를 지급했습니다.`,
+        newBalance
     });
 });
 
 // 뽑기 페이지
 app.get('/gacha', requireAuth, (req, res) => {
     if (req.session.isAdmin) return res.redirect('/admin');
-
     const balance = getTokenBalance(req.session.userId);
-
-    // 최근 뉴스 (SSS/SS 획득 소식) 최근 10개
-    const news = memoryDB.gachaNews
-        .slice(-10)
-        .reverse();
-
     res.render('gacha', {
         username: req.session.username,
         balance,
-        gachaCost: GACHA_COST,
-        news
+        gachaCost: GACHA_COST
     });
 });
 
-// 뽑기 실행 API
+// 뽑기 실행
 app.post('/gacha/draw', requireAuth, (req, res) => {
     if (req.session.isAdmin) {
         return res.json({ success: false, message: '관리자는 뽑기를 할 수 없습니다.' });
     }
 
-    const { count } = req.body; // 1 또는 그 이상
-    const drawCount = Math.min(Math.max(parseInt(count) || 1, 1), 10); // 1~10 제한
+    const drawCount = Math.min(Math.max(parseInt(req.body.count) || 1, 1), 10);
     const userId = req.session.userId;
-
     const totalCost = GACHA_COST * drawCount;
     const balance = getTokenBalance(userId);
 
     if (balance < totalCost) {
         return res.json({
             success: false,
-            message: `토큰이 부족합니다. (필요: ${totalCost}토큰, 보유: ${balance}토큰)`
+            message: `영혼석이 부족합니다. (필요: ${totalCost}개, 보유: ${balance}개)`
         });
     }
 
-    // 토큰 차감
     updateToken(userId, -totalCost, 'gacha');
 
-    // 뽑기 실행
     const results = [];
     for (let i = 0; i < drawCount; i++) {
-        const result = doGacha(userId);
-        results.push(result);
+        results.push(doGacha(userId));
     }
-
-    const newBalance = getTokenBalance(userId);
 
     res.json({
         success: true,
         results,
         totalCost,
-        newBalance
+        newBalance: getTokenBalance(userId)
     });
 });
 
-// 내 컬렉션 조회
-app.get('/gacha/collection', requireAuth, (req, res) => {
+// 도감 페이지
+app.get('/collection', requireAuth, (req, res) => {
     if (req.session.isAdmin) return res.redirect('/admin');
+    res.render('collection', { username: req.session.username });
+});
 
+// 도감 데이터
+app.get('/collection/data', requireAuth, (req, res) => {
+    if (req.session.isAdmin) {
+        return res.json({ success: false });
+    }
     const userId = req.session.userId;
     const myCollection = memoryDB.collections.filter(c => c.user_id === userId);
 
-    // CHARACTERS 전체에 보유 여부 합치기
+    const collectionData = CHARACTERS.map(char => {
+        const owned = myCollection.find(c => c.character_id === char.id);
+        return {
+            id: char.id,
+            grade: char.grade,
+            name: owned ? char.name : '???',
+            description: owned ? char.description : null,
+            color: char.color,
+            owned: !!owned,
+            count: owned ? owned.count : 0,
+            first_obtained_at: owned ? owned.first_obtained_at : null
+        };
+    });
+
+    const stats = {
+        SSS: { total: 1,  owned: 0 },
+        SS:  { total: 3,  owned: 0 },
+        S:   { total: 5,  owned: 0 },
+        A:   { total: 7,  owned: 0 },
+        B:   { total: 10, owned: 0 },
+        C:   { total: 14, owned: 0 },
+    };
+    collectionData.forEach(c => { if (c.owned) stats[c.grade].owned++; });
+
+    res.json({ success: true, collection: collectionData, stats });
+});
+
+// 관리자 특정 참가자 도감 조회
+app.get('/admin/collection/:userId', requireAdmin, (req, res) => {
+    const userId = parseInt(req.params.userId);
+    const user = memoryDB.users.find(u => u.id === userId && !u.is_admin);
+    if (!user) return res.json({ success: false, message: '사용자를 찾을 수 없습니다.' });
+
+    const myCollection = memoryDB.collections.filter(c => c.user_id === userId);
     const collectionData = CHARACTERS.map(char => {
         const owned = myCollection.find(c => c.character_id === char.id);
         return {
@@ -1798,109 +1823,15 @@ app.get('/gacha/collection', requireAuth, (req, res) => {
         };
     });
 
-    res.json({ success: true, collection: collectionData });
-});
-
-// 확률표 조회
-app.get('/gacha/rates', (req, res) => {
-    res.json({
-        success: true,
-        normal: GACHA_RATES.normal,
-        duplicate: GACHA_RATES.duplicate,
-        cost: GACHA_COST
-    });
-});
-
-// 도감 페이지 (학생용)
-app.get('/collection', requireAuth, (req, res) => {
-    if (req.session.isAdmin) return res.redirect('/admin');
-
-    res.render('collection', {
-        username: req.session.username
-    });
-});
-
-// 내 도감 데이터 API
-app.get('/collection/data', requireAuth, (req, res) => {
-    if (req.session.isAdmin) {
-        return res.json({ success: false, message: '관리자는 도감이 없습니다.' });
-    }
-
-    const userId = req.session.userId;
-    const myCollection = memoryDB.collections.filter(c => c.user_id === userId);
-
-    // 전체 캐릭터에 보유 여부 합치기
-    const collectionData = CHARACTERS.map(char => {
-        const owned = myCollection.find(c => c.character_id === char.id);
-        return {
-            id: char.id,
-            grade: char.grade,
-            name: owned ? char.name : '???',          // 미보유 시 이름 숨김
-            emoji: owned ? char.emoji : '❓',          // 미보유 시 이모지 숨김
-            description: owned ? char.description : null,
-            color: char.color,
-            owned: !!owned,
-            count: owned ? owned.count : 0,
-            first_obtained_at: owned ? owned.first_obtained_at : null
-        };
-    });
-
-    // 등급별 보유 통계
-    const stats = {
-        SSS: { total: 1,  owned: 0 },
-        SS:  { total: 3,  owned: 0 },
-        S:   { total: 5,  owned: 0 },
-        A:   { total: 7,  owned: 0 },
-        B:   { total: 10, owned: 0 },
-        C:   { total: 14, owned: 0 },
-    };
-
-    collectionData.forEach(c => {
-        if (c.owned) stats[c.grade].owned++;
-    });
-
-    res.json({ success: true, collection: collectionData, stats });
-});
-
-// 관리자용 특정 참가자 도감 조회
-app.get('/admin/collection/:userId', requireAdmin, (req, res) => {
-    const userId = parseInt(req.params.userId);
-    const user = memoryDB.users.find(u => u.id === userId && !u.is_admin);
-
-    if (!user) {
-        return res.json({ success: false, message: '사용자를 찾을 수 없습니다.' });
-    }
-
-    const myCollection = memoryDB.collections.filter(c => c.user_id === userId);
-
-    const collectionData = CHARACTERS.map(char => {
-        const owned = myCollection.find(c => c.character_id === char.id);
-        return {
-            id: char.id,
-            grade: char.grade,
-            name: char.name,       // 관리자는 이름 전부 공개
-            emoji: char.emoji,
-            description: char.description,
-            color: char.color,
-            owned: !!owned,
-            count: owned ? owned.count : 0,
-            first_obtained_at: owned ? owned.first_obtained_at : null
-        };
-    });
-
     res.json({ success: true, collection: collectionData, username: user.username });
 });
 
-// 관리자용 캐릭터별 보유자 검색
+// 관리자 캐릭터별 보유자 검색
 app.get('/admin/collection/search/:characterId', requireAdmin, (req, res) => {
     const characterId = req.params.characterId;
     const character = CHARACTERS.find(c => c.id === characterId);
+    if (!character) return res.json({ success: false, message: '캐릭터를 찾을 수 없습니다.' });
 
-    if (!character) {
-        return res.json({ success: false, message: '캐릭터를 찾을 수 없습니다.' });
-    }
-
-    // 해당 캐릭터를 보유한 유저 목록
     const owners = memoryDB.collections
         .filter(c => c.character_id === characterId)
         .map(c => {
@@ -1914,52 +1845,24 @@ app.get('/admin/collection/search/:characterId', requireAdmin, (req, res) => {
         })
         .sort((a, b) => a.username.localeCompare(b.username, 'ko'));
 
-    res.json({
-        success: true,
-        character,
-        owners,
-        ownerCount: owners.length
-    });
+    res.json({ success: true, character, owners, ownerCount: owners.length });
 });
 
-// 내 토큰 잔액 및 로그 조회
-app.get('/my-tokens', requireAuth, (req, res) => {
-    if (req.session.isAdmin) {
-        return res.json({ success: false, message: '관리자는 토큰이 없습니다.' });
-    }
-
-    const balance = getTokenBalance(req.session.userId);
-    const logs = memoryDB.tokenLogs
-        .filter(l => l.user_id === req.session.userId)
-        .slice(-20)
-        .reverse();
-
-    res.json({ success: true, balance, logs });
+// 이달의 뉴스 페이지
+app.get('/news', requireAuth, (req, res) => {
+    if (req.session.isAdmin) return res.redirect('/admin');
+    res.render('news', { username: req.session.username });
 });
 
-// 관리자가 특정 참가자에게 토큰 지급
-app.post('/admin/give-token', requireAdmin, (req, res) => {
-    const { userId, amount } = req.body;
-    const parsedAmount = parseInt(amount);
-
-    if (!parsedAmount || parsedAmount <= 0) {
-        return res.json({ success: false, message: '유효한 토큰 수량을 입력하세요.' });
-    }
-
-    const targetUser = memoryDB.users.find(
-        u => u.id === parseInt(userId) && !u.is_admin
-    );
-    if (!targetUser) {
-        return res.json({ success: false, message: '사용자를 찾을 수 없습니다.' });
-    }
-
-    const newBalance = updateToken(parseInt(userId), parsedAmount, 'admin');
-
-    res.json({
-        success: true,
-        message: `${targetUser.username}에게 ${parsedAmount}토큰을 지급했습니다.`,
-        newBalance
-    });
+// 이달의 뉴스 데이터
+app.get('/news/data', requireAuth, (req, res) => {
+    const allNews = [...memoryDB.gachaNews]
+        .reverse()
+        .map(n => ({
+            ...n,
+            maskedName: maskName(n.username)
+        }));
+    res.json({ success: true, news: allNews });
 });
 
 app.get('/logout', (req, res) => {
