@@ -1676,8 +1676,15 @@ app.get('/my-tokens', requireAuth, (req, res) => {
     res.json({ success: true, balance, logs });
 });
 
-// 영혼석 코드 입력 (무한 사용)
-app.post('/enter-code', requireAuth, (req, res) => {
+// 영혼석 코드 입력 페이지
+app.get('/enter-code-page', requireAuth, (req, res) => {
+    if (req.session.isAdmin) return res.redirect('/admin');
+    const balance = getTokenBalance(req.session.userId);
+    res.render('enter-code', {
+        username: req.session.username,
+        balance
+    });
+});
     if (req.session.isAdmin) {
         return res.json({ success: false, message: '관리자는 코드를 사용할 수 없습니다.' });
     }
