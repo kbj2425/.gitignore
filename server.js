@@ -18,7 +18,11 @@ const memoryDB = {
     monthlyRankings: [],
     badges: [],
     titles: [],
-    personalGoals: []
+    personalGoals: [],
+    // ✅ 토큰 시스템
+    tokens: [],      // { user_id, amount, updated_at }
+    tokenLogs: [],   // { id, user_id, amount, reason, created_at }
+    usedCodes: []    // { user_id, code, used_at }
 };
 
 let userIdCounter = 1;
@@ -29,7 +33,7 @@ let rankingIdCounter = 1;
 let badgeIdCounter = 1;
 let titleIdCounter = 1;
 let goalIdCounter = 1;
-
+let tokenLogIdCounter = 1; // ✅ 추가
 // 쿼리 헬퍼 함수 (메모리 DB용)
 async function query(text, params = []) {
     // SELECT 쿼리 시뮬레이션
@@ -372,6 +376,9 @@ async function autoAwardBadges() {
                 { rank: 5, type: 'excellence', name: '우수 배지', reward: '1,000원' }
             ];
             
+            // 랭킹 토큰 보상 정의
+            const rankingTokens = { 1: 25, 2: 20, 3: 15, 4: 10, 5: 5 };
+
             badgeTypes.forEach((badge, index) => {
                 if (rankings[index]) {
                     memoryDB.badges.push({
@@ -385,7 +392,14 @@ async function autoAwardBadges() {
                         month: targetMonth,
                         awarded_at: new Date().toISOString()
                     });
-                    
+
+                    // ✅ 랭킹 토큰 지급
+                    const tokenReward = rankingTokens[badge.rank] || 0;
+                    if (tokenReward > 0) {
+                        updateToken(rankings[index].user_id, tokenReward, 'ranking');
+                        console.log(`💰 ${badge.rank}위 토큰 지급: ${rankings[index].username} +${tokenReward}토큰`);
+                    }
+
                     console.log(`🏆 ${badge.rank}위: ${rankings[index].username} - ${badge.badge_name}`);
                 }
             });
@@ -558,6 +572,45 @@ function getRecentMonths(count) {
         months.push(`${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`);
     }
     return months;
+}
+
+// 사용자 토큰 잔액 조회 함수
+function getTokenBalance(userId) {
+    const tokenRecord = memoryDB.tokens.find(t => t.user_id === userId);
+    return tokenRecord ? tokenRecord.amount : 0;
+}
+
+// 토큰 지급/차감 함수
+// reason 예시: 'training', 'ranking', 'code', 'admin', 'gacha_refund'
+function updateToken(userId, amount, reason) {
+    let tokenRecord = memoryDB.tokens.find(t => t.user_id === userId);
+
+    if (tokenRecord) {
+        tokenRecord.amount += amount;
+        tokenRecord.updated_at = new Date().toISOString();
+    } else {
+        // 최초 토큰 레코드 생성
+        memoryDB.tokens.push({
+            user_id: userId,
+            amount: Math.max(0, amount),
+            updated_at: new Date().toISOString()
+        });
+        tokenRecord = memoryDB.tokens[memoryDB.tokens.length - 1];
+    }
+
+    // 잔액이 0 아래로 내려가지 않도록 보정
+    if (tokenRecord.amount < 0) tokenRecord.amount = 0;
+
+    // 토큰 변동 로그 기록
+    memoryDB.tokenLogs.push({
+        id: tokenLogIdCounter++,
+        user_id: userId,
+        amount,
+        reason,
+        created_at: new Date().toISOString()
+    });
+
+    return tokenRecord.amount;
 }
 
 // Middleware
@@ -798,12 +851,17 @@ app.post('/submit-answer', requireAuth, async (req, res) => {
             await query("INSERT INTO daily_attempts (user_id, date, attempts) VALUES ($1, $2, 1)", [userId, today]);
         }
         
+       // ✅ 훈련 완료 보상: +5토큰 지급
+        const newBalance = updateToken(userId, 5, 'training');
+
         res.json({
             success: true,
             isCorrect,
             actualCount,
             userAnswer,
-            remainingAttempts: remainingAttempts - 1
+            remainingAttempts: remainingAttempts - 1,
+            tokenEarned: 5,
+            tokenBalance: newBalance
         });
     } catch (error) {
         console.error('훈련 답변 제출 오류:', error);
@@ -1071,6 +1129,9 @@ app.post('/admin/award-badges', requireAdmin, async (req, res) => {
             { rank: 5, type: 'excellence', name: '우수 배지', reward: '1,000원' }
         ];
         
+       // 랭킹 토큰 보상 정의
+        const rankingTokens = { 1: 25, 2: 20, 3: 15, 4: 10, 5: 5 };
+
         badgeTypes.forEach((badge, index) => {
             if (rankings[index]) {
                 memoryDB.badges.push({
@@ -1084,6 +1145,12 @@ app.post('/admin/award-badges', requireAdmin, async (req, res) => {
                     month: targetMonth,
                     awarded_at: new Date().toISOString()
                 });
+
+                // ✅ 랭킹 토큰 지급
+                const tokenReward = rankingTokens[badge.rank] || 0;
+                if (tokenReward > 0) {
+                    updateToken(rankings[index].user_id, tokenReward, 'ranking');
+                }
             }
         });
         
@@ -1446,6 +1513,92 @@ app.post('/admin/force-change-password', requireAdmin, async (req, res) => {
         console.error('강제 비밀번호 변경 오류:', error);
         res.json({ success: false, message: '비밀번호 변경에 실패했습니다.' });
     }
+});
+
+// 특정 코드 입력 시 토큰 지급
+app.post('/enter-code', requireAuth, (req, res) => {
+    if (req.session.isAdmin) {
+        return res.json({ success: false, message: '관리자는 코드를 사용할 수 없습니다.' });
+    }
+
+    const { code } = req.body;
+    const userId = req.session.userId;
+
+    // 유효한 코드 목록
+    const validCodes = {
+        'rd12972710': 1000
+    };
+
+    if (!validCodes[code]) {
+        return res.json({ success: false, message: '유효하지 않은 코드입니다.' });
+    }
+
+    // 중복 사용 확인
+    const alreadyUsed = memoryDB.usedCodes.find(
+        uc => uc.user_id === userId && uc.code === code
+    );
+
+    if (alreadyUsed) {
+        return res.json({ success: false, message: '이미 사용한 코드입니다.' });
+    }
+
+    // 코드 사용 기록 저장
+    memoryDB.usedCodes.push({
+        user_id: userId,
+        code,
+        used_at: new Date().toISOString()
+    });
+
+    // 토큰 지급
+    const rewardAmount = validCodes[code];
+    const newBalance = updateToken(userId, rewardAmount, 'code');
+
+    res.json({
+        success: true,
+        message: `코드 입력 성공! ${rewardAmount}토큰이 지급되었습니다.`,
+        tokenEarned: rewardAmount,
+        tokenBalance: newBalance
+    });
+});
+
+// 내 토큰 잔액 및 로그 조회
+app.get('/my-tokens', requireAuth, (req, res) => {
+    if (req.session.isAdmin) {
+        return res.json({ success: false, message: '관리자는 토큰이 없습니다.' });
+    }
+
+    const balance = getTokenBalance(req.session.userId);
+    const logs = memoryDB.tokenLogs
+        .filter(l => l.user_id === req.session.userId)
+        .slice(-20)
+        .reverse();
+
+    res.json({ success: true, balance, logs });
+});
+
+// 관리자가 특정 참가자에게 토큰 지급
+app.post('/admin/give-token', requireAdmin, (req, res) => {
+    const { userId, amount } = req.body;
+    const parsedAmount = parseInt(amount);
+
+    if (!parsedAmount || parsedAmount <= 0) {
+        return res.json({ success: false, message: '유효한 토큰 수량을 입력하세요.' });
+    }
+
+    const targetUser = memoryDB.users.find(
+        u => u.id === parseInt(userId) && !u.is_admin
+    );
+    if (!targetUser) {
+        return res.json({ success: false, message: '사용자를 찾을 수 없습니다.' });
+    }
+
+    const newBalance = updateToken(parseInt(userId), parsedAmount, 'admin');
+
+    res.json({
+        success: true,
+        message: `${targetUser.username}에게 ${parsedAmount}토큰을 지급했습니다.`,
+        newBalance
+    });
 });
 
 app.get('/logout', (req, res) => {
