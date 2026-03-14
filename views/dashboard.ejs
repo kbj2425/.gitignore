@@ -186,7 +186,214 @@
             padding: 40px;
         }
 
-        @media (max-width: 768px) {
+/* 토큰 카드 */
+        .token-card {
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            padding: 25px 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(255,165,0,0.3);
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+        }
+
+        .token-left h3 {
+            font-size: 1.1em;
+            margin-bottom: 8px;
+            opacity: 0.9;
+        }
+
+        .token-amount {
+            font-size: 2.5em;
+            font-weight: bold;
+        }
+
+        .token-right {
+            text-align: right;
+        }
+
+        .token-earn-info {
+            font-size: 0.9em;
+            opacity: 0.85;
+            margin-bottom: 5px;
+        }
+
+        .token-log-btn {
+            background: rgba(255,255,255,0.25);
+            border: none;
+            color: white;
+            padding: 7px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: background 0.3s;
+            margin-top: 8px;
+        }
+
+        .token-log-btn:hover {
+            background: rgba(255,255,255,0.4);
+        }
+
+        /* 뽑기/도감 버튼 */
+        .action-cards {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .action-card {
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            text-decoration: none;
+            color: white;
+            font-weight: bold;
+            font-size: 1.1em;
+            transition: transform 0.3s, box-shadow 0.3s;
+            display: block;
+        }
+
+        .action-card:hover {
+            transform: translateY(-3px);
+        }
+
+        .action-card.gacha {
+            background: linear-gradient(135deg, #1a1a2e, #0f3460);
+            box-shadow: 0 5px 20px rgba(15,52,96,0.4);
+            border: 1px solid rgba(255,215,0,0.3);
+        }
+
+        .action-card.collection {
+            background: linear-gradient(135deg, #0d0021, #1a0033);
+            box-shadow: 0 5px 20px rgba(155,89,182,0.3);
+            border: 1px solid rgba(155,89,182,0.3);
+        }
+
+        .action-card-icon {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        /* 코드 입력 카드 */
+        .code-card {
+            background: white;
+            padding: 25px 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+
+        .code-card h3 {
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .code-card p {
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 15px;
+        }
+
+        .code-input-row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .code-input-row input {
+            flex: 1;
+            min-width: 180px;
+            padding: 11px 15px;
+            border: 2px solid #FFC0CB;
+            border-radius: 8px;
+            font-size: 1em;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .code-input-row input:focus {
+            border-color: #FF69B4;
+        }
+
+        .code-submit-btn {
+            background: #FFC0CB;
+            color: white;
+            border: none;
+            padding: 11px 25px;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .code-submit-btn:hover {
+            background: #FF69B4;
+        }
+
+        .code-result {
+            margin-top: 10px;
+            font-size: 0.9em;
+            min-height: 20px;
+        }
+
+        /* 토큰 로그 모달 */
+        .token-modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0; top: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.4);
+        }
+
+        .token-modal-content {
+            background: white;
+            margin: 10% auto;
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 420px;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+
+        .token-modal-content h3 {
+            color: #FFA500;
+            margin-bottom: 20px;
+        }
+
+        .token-log-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+            font-size: 0.9em;
+        }
+
+        .token-log-reason { color: #666; font-size: 0.85em; margin-top: 2px; }
+        .token-plus  { color: #28a745; font-weight: bold; }
+        .token-minus { color: #dc3545; font-weight: bold; }
+
+        .modal-close-btn {
+            display: block;
+            width: 100%;
+            margin-top: 20px;
+            padding: 10px;
+            background: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .modal-close-btn:hover { background: #545b62; }
+
+@media (max-width: 768px) {
             .container {
                 padding: 10px;
             }
@@ -207,6 +414,21 @@
             .records-table td {
                 padding: 8px 4px;
             }
+
+            /* ✅ 추가 */
+            .token-card {
+                flex-direction: column;
+                text-align: center;
+                gap: 15px;
+            }
+
+            .token-right {
+                text-align: center;
+            }
+
+            .action-cards {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
@@ -225,7 +447,50 @@
     </div>
 
     <div class="container">
-       <div class="stats-card" style="text-align: center; background: linear-gradient(135deg, #FFD700, #FFA500); color: white;">
+
+        <!-- 토큰 카드 -->
+        <div class="token-card">
+            <div class="token-left">
+                <h3>🪙 내 토큰</h3>
+                <div class="token-amount" id="tokenAmount">로딩 중...</div>
+            </div>
+            <div class="token-right">
+                <p class="token-earn-info">훈련 완료 +5토큰</p>
+                <p class="token-earn-info">뽑기 1회 = 10토큰</p>
+                <button class="token-log-btn" onclick="openTokenLog()">내역 보기 📋</button>
+            </div>
+        </div>
+
+        <!-- 뽑기 / 도감 버튼 -->
+        <div class="action-cards">
+            <a href="/gacha" class="action-card gacha">
+                <div class="action-card-icon">🎰</div>
+                동물 뽑기
+            </a>
+            <a href="/collection" class="action-card collection">
+                <div class="action-card-icon">📖</div>
+                도감 보기
+            </a>
+        </div>
+
+        <!-- 코드 입력 -->
+        <div class="code-card">
+            <h3>🎁 코드 입력</h3>
+            <p>특별 코드를 입력하면 토큰을 받을 수 있어요!</p>
+            <div class="code-input-row">
+                <input
+                    type="text"
+                    id="codeInput"
+                    placeholder="코드를 입력하세요"
+                    onkeypress="if(event.key==='Enter') submitCode()"
+                >
+                <button class="code-submit-btn" onclick="submitCode()">확인</button>
+            </div>
+            <div class="code-result" id="codeResult"></div>
+        </div>
+
+        <!-- 기존 랭킹 카드 -->
+        <div class="stats-card" style="text-align: center; background: linear-gradient(135deg, #FFD700, #FFA500); color: white;">
             <h2 style="color: white;">🏆 이번 달 랭킹</h2>
             <p style="margin: 15px 0; font-size: 1.2em;">내 순위를 확인하고 목표를 설정하세요!</p>
             <a href="/ranking" style="display: inline-block; background: white; color: #FFA500; padding: 12px 30px; border-radius: 50px; text-decoration: none; font-weight: bold; margin-top: 10px;">랭킹 보러가기 →</a>
@@ -280,8 +545,123 @@
         </div>
     </div>
 
-    <script>
+<!-- 토큰 내역 모달 -->
+    <div class="token-modal" id="tokenModal">
+        <div class="token-modal-content">
+            <h3>🪙 토큰 내역 (최근 20개)</h3>
+            <div id="tokenLogList"></div>
+            <button class="modal-close-btn" onclick="closeTokenLog()">닫기</button>
+        </div>
+    </div>
+
+   <script>
         let dropdownTimeout;
+
+        // 이유 코드 → 한국어 변환
+        const reasonLabel = {
+            'training':     '훈련 완료',
+            'ranking':      '랭킹 보상',
+            'code':         '코드 입력',
+            'admin':        '관리자 지급',
+            'gacha':        '뽑기 사용',
+            'gacha_refund': '중복 보상'
+        };
+
+        // 페이지 로드 시 토큰 잔액 조회
+        async function loadTokenBalance() {
+            try {
+                const res = await fetch('/my-tokens');
+                const data = await res.json();
+                if (data.success) {
+                    document.getElementById('tokenAmount').textContent =
+                        data.balance.toLocaleString() + ' 토큰';
+                }
+            } catch (err) {
+                document.getElementById('tokenAmount').textContent = '조회 실패';
+            }
+        }
+
+        // 토큰 내역 모달 열기
+        async function openTokenLog() {
+            try {
+                const res = await fetch('/my-tokens');
+                const data = await res.json();
+                const list = document.getElementById('tokenLogList');
+
+                if (!data.success || data.logs.length === 0) {
+                    list.innerHTML =
+                        '<p style="text-align:center;color:#666;padding:20px;">내역이 없습니다.</p>';
+                } else {
+                    list.innerHTML = data.logs.map(log => `
+                        <div class="token-log-item">
+                            <div>
+                                <div>${reasonLabel[log.reason] || log.reason}</div>
+                                <div class="token-log-reason">
+                                    ${new Date(log.created_at).toLocaleString('ko-KR')}
+                                </div>
+                            </div>
+                            <div class="${log.amount >= 0 ? 'token-plus' : 'token-minus'}">
+                                ${log.amount >= 0 ? '+' : ''}${log.amount} 🪙
+                            </div>
+                        </div>
+                    `).join('');
+                }
+
+                document.getElementById('tokenModal').style.display = 'block';
+            } catch (err) {
+                alert('내역을 불러오는데 실패했습니다.');
+            }
+        }
+
+        // 토큰 내역 모달 닫기
+        function closeTokenLog() {
+            document.getElementById('tokenModal').style.display = 'none';
+        }
+
+        // 코드 입력 제출
+        async function submitCode() {
+            const code = document.getElementById('codeInput').value.trim();
+            const resultDiv = document.getElementById('codeResult');
+
+            if (!code) {
+                resultDiv.innerHTML = '<span style="color:#dc3545;">코드를 입력해주세요.</span>';
+                return;
+            }
+
+            try {
+                const res = await fetch('/enter-code', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ code })
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    resultDiv.innerHTML =
+                        `<span style="color:#28a745;">✅ ${data.message}</span>`;
+                    document.getElementById('codeInput').value = '';
+                    // 토큰 잔액 새로고침
+                    document.getElementById('tokenAmount').textContent =
+                        data.tokenBalance.toLocaleString() + ' 토큰';
+                } else {
+                    resultDiv.innerHTML =
+                        `<span style="color:#dc3545;">❌ ${data.message}</span>`;
+                }
+            } catch (err) {
+                resultDiv.innerHTML =
+                    '<span style="color:#dc3545;">서버 오류가 발생했습니다.</span>';
+            }
+        }
+
+        // 모달 바깥 클릭 시 닫기
+        window.addEventListener('click', e => {
+            if (e.target === document.getElementById('tokenModal')) {
+                closeTokenLog();
+            }
+        });
+
+        // 페이지 로드 시 토큰 잔액 불러오기
+        loadTokenBalance();
 
         function toggleDropdown() {
             const dropdown = document.getElementById('dropdown');
