@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>도감 - READIN</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+            min-height: 100vh;
+            color: white;
+        }
+
+        .header {
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .logo { color: #FFD700; font-size: 1.8em; font-weight: bold; }
+
+        .user-menu { position: relative; }
+
+        .username {
+            color: #FFD700;
+            font-weight: bold;
+            cursor: pointer;
+            padding: 10px 15px;
+            border-radius: 5px;
+        }
+
+        .dropdown {
+            position: absolute;
+            top: 100%; right: 0;
+            background: #1a1a2e;
+            border: 1px solid rgba(255,255,255,0.2);
+            min-width: 150px;
+            border-radius: 5px;
+            display: none;
+            z-index: 1000;
+        }
+
+        .dropdown.show { display: block; }
+
+        .dropdown a {
+            display: block;
+            padding: 10px 15px;
+            text-decoration: none;
+            color: #ccc;
+        }
+
+        .dropdown a:hover {
+            background: rgba(255,255,255,0.1);
+            color: white;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+
+        .page-title {
+            font-size: 2em;
+            font-weight: bold;
+            color: #FFD700;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .page-subtitle {
+            text-align: center;
+            color: #aaa;
+            margin-bottom: 30px;
+        }
+
+        /* 통계 바 */
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        .stat-item {
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+            padding: 12px;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .stat-grade {
+            font-size: 0.85em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .stat-count {
+            font-size: 1.1em;
+            color: white;
+        }
+
+        .stat-bar-fill {
+            height: 4px;
+            border-radius: 2px;
+            margin-top: 6px;
+        }
+
+        /* 등급 필터 */
+        .grade-filter {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 25px;
+        }
+
+        .filter-btn {
+            padding: 7px 18px;
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.2);
+            background: transparent;
+            color: #aaa;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.9em;
+        }
+
+        .filter-btn:hover,
+        .filter-btn.active {
+            color: white;
+        }
+
+        .filter-btn.active-all    { border-color: #FFD700; color: #FFD700; background: rgba(255,215,0,0.1); }
+        .filter-btn.active-SSS    { border-color: #FFD700; color: #FFD700; background: rgba(255,215,0,0.1); }
+        .filter-btn.active-SS     { border-color: #9B59B6; color: #9B59B6; background: rgba(155,89,182,0.1); }
+        .filter-btn.active-S      { border-color: #3498DB; color: #3498DB; background: rgba(52,152,219,0.1); }
+        .filter-btn.active-A      { border-color: #27AE60; color: #27AE60; background: rgba(39,174,96,0.1); }
+        .filter-btn.active-B      { border-color: #95A5A6; color: #95A5A6; background: rgba(149,165,166,0.1); }
+        .filter-btn.active-C      { border-color: #636e72; color: #aaa;    background: rgba(99,110,114,0.1); }
+
+        /* 도감 그리드 */
+        .collection-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            gap: 12px;
+        }
+
+        /* 도감 카드 */
+        .char-card {
+            border-radius: 12px;
+            padding: 15px 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.2s;
+            position: relative;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .char-card:hover { transform: translateY(-4px); }
+
+        /* 미보유 - 검정 실루엣 */
+        .char-card.not-owned {
+            background: rgba(255,255,255,0.03);
+            filter: grayscale(1);
+        }
+
+        .char-card.not-owned .char-emoji {
+            filter: brightness(0);  /* 완전 검정 실루엣 */
+            opacity: 0.4;
+        }
+
+        .char-card.not-owned .char-name {
+            color: #555;
+        }
+
+        /* 보유 - 등급별 색상 */
+        .char-card.owned-SSS {
+            background: linear-gradient(135deg, #1a1a00, #332200);
+            border-color: #FFD700;
+            box-shadow: 0 0 15px rgba(255,215,0,0.3);
+        }
+
+        .char-card.owned-SS {
+            background: linear-gradient(135deg, #1a0033, #2d0052);
+            border-color: #9B59B6;
+            box-shadow: 0 0 12px rgba(155,89,182,0.3);
+        }
+
+        .char-card.owned-S {
+            background: linear-gradient(135deg, #001a33, #002952);
+            border-color: #3498DB;
+            box-shadow: 0 0 10px rgba(52,152,219,0.2);
+        }
+
+        .char-card.owned-A {
+            background: linear-gradient(135deg, #001a00, #003300);
+            border-color: #27AE60;
+        }
+
+        .char-card.owned-B {
+            background: linear-gradient(135deg, #1a1a1a, #2d2d2d);
+            border-color: #95A5A6;
+        }
+
+        .char-card.owned-C {
+            background: linear-gradient(135deg, #111, #1a1a1a);
+            border-color: #636e72;
+        }
+
+        .char-emoji { font-size: 2.5em; margin-bottom: 8px; display: block; }
+
+        .char-grade {
+            font-size: 0.7em;
+            font-weight: bold;
+            padding: 2px 7px;
+            border-radius: 8px;
+            display: inline-block;
+            margin-bottom: 5px;
+        }
+
+        .char-name {
+            font-size: 0.8em;
+            color: #ddd;
+            margin-top: 4px;
+        }
+
+        .char-count {
+            position: absolute;
+            top: 6px; right: 6px;
+            background: rgba(255,215,0,0.8);
+            color: #1a1a1a;
+            font-size: 0.65em;
+            font-weight: bold;
+            padding: 2px 5px;
+            border-radius: 8px;
+        }
+
+        /* 상세 모달 */
+        .detail-modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .detail-modal.show { display: flex; }
+
+        .detail-content {
+            background: #1a1a2e;
+            border-radius: 20px;
+            padding: 35px;
+            max-width: 380px;
+            width: 90%;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .detail-emoji { font-size: 5em; margin-bottom: 15px; }
+
+        .detail-grade {
+            font-size: 0.9em;
+            font-weight: bold;
+            padding: 4px 12px;
+            border-radius: 12px;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+
+        .detail-name {
+            font-size: 1.6em;
+            font-weight: bold;
+            color: white;
+            margin-bottom: 15px;
+        }
+
+        .detail-desc {
+            color: #aaa;
+            font-size: 0.95em;
+            line-height: 1.7;
+            margin-bottom: 15px;
+        }
+
+        .detail-obtained {
+            color: #666;
+            font-size: 0.8em;
+            margin-bottom: 20px;
+        }
+
+        .detail-close {
+            background: rgba(255,255,255,0.1);
+            border: none;
+            color: white;
+            padding: 10px 30px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .detail-close:hover { background: rgba(255,255,255,0.2); }
+
+        .loading {
+            text-align: center;
+            padding: 60px;
+            color: #aaa;
+            font-size: 1.2em;
+        }
+
+        @media (max-width: 600px) {
+            .stats-bar { grid-template-columns: repeat(3, 1fr); }
+            .collection-grid { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); }
+            .char-emoji { font-size: 2em; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">READIN 도감</div>
+        <div class="user-menu">
+            <div class="username" onclick="toggleDropdown()"><%= username %> ▼</div>
+            <div class="dropdown" id="dropdown">
+                <a href="/dashboard">대시보드</a>
+                <a href="/gacha">뽑기</a>
+                <a href="/logout">로그아웃</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="page-title">📖 동물 도감</div>
+        <div class="page-subtitle">획득한 동물 캐릭터를 모아보세요! 미획득 캐릭터는 실루엣으로 표시됩니다.</div>
+
+        <!-- 통계 바 -->
+        <div class="stats-bar" id="statsBar">
+            <div class="stat-item">
+                <div class="stat-grade" style="color:#FFD700;">SSS</div>
+                <div class="stat-count" id="stat-SSS">-/-</div>
+                <div class="stat-bar-fill" style="background:#FFD700; width:0%" id="bar-SSS"></div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-grade" style="color:#9B59B6;">SS</div>
+                <div class="stat-count" id="stat-SS">-/-</div>
+                <div class="stat-bar-fill" style="background:#9B59B6; width:0%" id="bar-SS"></div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-grade" style="color:#3498DB;">S</div>
+                <div class="stat-count" id="stat-S">-/-</div>
+                <div class="stat-bar-fill" style="background:#3498DB; width:0%" id="bar-S"></div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-grade" style="color:#27AE60;">A</div>
+                <div class="stat-count" id="stat-A">-/-</div>
+                <div class="stat-bar-fill" style="background:#27AE60; width:0%" id="bar-A"></div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-grade" style="color:#95A5A6;">B</div>
+                <div class="stat-count" id="stat-B">-/-</div>
+                <div class="stat-bar-fill" style="background:#95A5A6; width:0%" id="bar-B"></div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-grade" style="color:#aaa;">C</div>
+                <div class="stat-count" id="stat-C">-/-</div>
+                <div class="stat-bar-fill" style="background:#636e72; width:0%" id="bar-C"></div>
+            </div>
+        </div>
+
+        <!-- 등급 필터 -->
+        <div class="grade-filter">
+            <button class="filter-btn active-all" onclick="filterGrade('all', this)">전체</button>
+            <button class="filter-btn" onclick="filterGrade('SSS', this)" style="color:#FFD700;">SSS</button>
+            <button class="filter-btn" onclick="filterGrade('SS', this)"  style="color:#9B59B6;">SS</button>
+            <button class="filter-btn" onclick="filterGrade('S', this)"   style="color:#3498DB;">S</button>
+            <button class="filter-btn" onclick="filterGrade('A', this)"   style="color:#27AE60;">A</button>
+            <button class="filter-btn" onclick="filterGrade('B', this)"   style="color:#95A5A6;">B</button>
+            <button class="filter-btn" onclick="filterGrade('C', this)"   style="color:#aaa;">C</button>
+        </div>
+
+        <!-- 도감 그리드 -->
+        <div class="collection-grid" id="collectionGrid">
+            <div class="loading">도감 불러오는 중... ✨</div>
+        </div>
+    </div>
+
+    <!-- 캐릭터 상세 모달 -->
+    <div class="detail-modal" id="detailModal">
+        <div class="detail-content">
+            <div class="detail-emoji"  id="detailEmoji"></div>
+            <div class="detail-grade"  id="detailGrade"></div>
+            <div class="detail-name"   id="detailName"></div>
+            <div class="detail-desc"   id="detailDesc"></div>
+            <div class="detail-obtained" id="detailObtained"></div>
+            <button class="detail-close" onclick="closeDetail()">닫기</button>
+        </div>
+    </div>
+
+    <script>
+        let allCollection = [];
+        let currentFilter = 'all';
+        let dropdownTimeout;
+
+        const gradeColors = {
+            SSS: '#FFD700',
+            SS:  '#9B59B6',
+            S:   '#3498DB',
+            A:   '#27AE60',
+            B:   '#95A5A6',
+            C:   '#636e72'
+        };
+
+        // 드롭다운
+        function toggleDropdown() {
+            document.getElementById('dropdown').classList.toggle('show');
+        }
+        document.querySelector('.user-menu').addEventListener('mouseenter', () => {
+            clearTimeout(dropdownTimeout);
+            document.getElementById('dropdown').classList.add('show');
+        });
+        document.querySelector('.user-menu').addEventListener('mouseleave', () => {
+            dropdownTimeout = setTimeout(() => {
+                document.getElementById('dropdown').classList.remove('show');
+            }, 300);
+        });
+        document.addEventListener('click', e => {
+            if (!document.querySelector('.user-menu').contains(e.target)) {
+                document.getElementById('dropdown').classList.remove('show');
+            }
+        });
+
+        // 페이지 로드 시 도감 데이터 조회
+        async function loadCollection() {
+            try {
+                const res = await fetch('/collection/data');
+                const data = await res.json();
+
+                if (!data.success) {
+                    document.getElementById('collectionGrid').innerHTML =
+                        '<div class="loading">도감을 불러올 수 없습니다.</div>';
+                    return;
+                }
+
+                allCollection = data.collection;
+                updateStats(data.stats);
+                renderGrid('all');
+            } catch (err) {
+                console.error('도감 로딩 오류:', err);
+            }
+        }
+
+        // 통계 업데이트
+        function updateStats(stats) {
+            ['SSS','SS','S','A','B','C'].forEach(grade => {
+                const s = stats[grade];
+                document.getElementById(`stat-${grade}`).textContent =
+                    `${s.owned}/${s.total}`;
+                const pct = s.total > 0 ? (s.owned / s.total * 100) : 0;
+                document.getElementById(`bar-${grade}`).style.width = pct + '%';
+            });
+        }
+
+        // 등급 필터
+        function filterGrade(grade, btn) {
+            currentFilter = grade;
+
+            // 버튼 스타일 초기화
+            document.querySelectorAll('.filter-btn').forEach(b => {
+                b.className = 'filter-btn';
+                // 기본 색상 복원
+                const g = b.textContent.trim();
+                if (gradeColors[g]) b.style.color = gradeColors[g];
+                else b.style.color = '#aaa';
+            });
+
+            // 활성 버튼 스타일
+            btn.classList.add(grade === 'all' ? 'active-all' : `active-${grade}`);
+
+            renderGrid(grade);
+        }
+
+        // 도감 그리드 렌더링
+        function renderGrid(filter) {
+            const grid = document.getElementById('collectionGrid');
+            const filtered = filter === 'all'
+                ? allCollection
+                : allCollection.filter(c => c.grade === filter);
+
+            if (filtered.length === 0) {
+                grid.innerHTML = '<div class="loading">캐릭터가 없습니다.</div>';
+                return;
+            }
+
+            grid.innerHTML = filtered.map((char, idx) => {
+                const ownedClass = char.owned ? `owned-${char.grade}` : 'not-owned';
+                const gradeColor = gradeColors[char.grade];
+
+                return `
+                    <div class="char-card ${ownedClass}"
+                         onclick="showDetail(${idx}, '${filter}')">
+                        ${char.count > 1 ? `<div class="char-count">×${char.count}</div>` : ''}
+                        <span class="char-emoji">${char.emoji}</span>
+                        <div class="char-grade"
+                             style="background:${gradeColor}20; color:${gradeColor}; border: 1px solid ${gradeColor}40;">
+                            ${char.grade}
+                        </div>
+                        <div class="char-name">${char.name}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // 캐릭터 상세 보기
+        function showDetail(idx, filter) {
+            const filtered = filter === 'all'
+                ? allCollection
+                : allCollection.filter(c => c.grade === filter);
+
+            const char = filtered[idx];
+            if (!char) return;
+
+            const gradeColor = gradeColors[char.grade];
+
+            document.getElementById('detailEmoji').textContent   = char.emoji;
+            document.getElementById('detailGrade').textContent   = char.grade;
+            document.getElementById('detailGrade').style.background = gradeColor + '30';
+            document.getElementById('detailGrade').style.color      = gradeColor;
+            document.getElementById('detailGrade').style.border     = `1px solid ${gradeColor}60`;
+            document.getElementById('detailName').textContent    = char.name;
+
+            if (char.owned) {
+                document.getElementById('detailDesc').textContent =
+                    char.description || '설명 없음';
+                document.getElementById('detailObtained').textContent =
+                    `획득일: ${new Date(char.first_obtained_at).toLocaleDateString('ko-KR')}` +
+                    (char.count > 1 ? ` | 보유 수: ${char.count}` : '');
+            } else {
+                document.getElementById('detailDesc').textContent =
+                    '아직 획득하지 못한 캐릭터입니다. 뽑기로 도전해보세요!';
+                document.getElementById('detailObtained').textContent = '';
+            }
+
+            document.getElementById('detailModal').classList.add('show');
+        }
+
+        function closeDetail() {
+            document.getElementById('detailModal').classList.remove('show');
+        }
+
+        window.addEventListener('click', e => {
+            if (e.target === document.getElementById('detailModal')) closeDetail();
+        });
+
+        // 초기 로딩
+        loadCollection();
+    </script>
+</body>
+</html>
