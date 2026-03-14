@@ -1685,6 +1685,9 @@ app.get('/enter-code-page', requireAuth, (req, res) => {
         balance
     });
 });
+
+// 영혼석 코드 입력 처리
+app.post('/enter-code', requireAuth, (req, res) => {
     if (req.session.isAdmin) {
         return res.json({ success: false, message: '관리자는 코드를 사용할 수 없습니다.' });
     }
@@ -1705,7 +1708,6 @@ app.get('/enter-code-page', requireAuth, (req, res) => {
         soulStoneBalance: newBalance
     });
 });
-
 // 관리자 영혼석 지급
 app.post('/admin/give-token', requireAdmin, (req, res) => {
     const { userId, amount } = req.body;
