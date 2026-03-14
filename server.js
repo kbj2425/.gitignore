@@ -1811,6 +1811,117 @@ app.get('/gacha/rates', (req, res) => {
     });
 });
 
+// 도감 페이지 (학생용)
+app.get('/collection', requireAuth, (req, res) => {
+    if (req.session.isAdmin) return res.redirect('/admin');
+
+    res.render('collection', {
+        username: req.session.username
+    });
+});
+
+// 내 도감 데이터 API
+app.get('/collection/data', requireAuth, (req, res) => {
+    if (req.session.isAdmin) {
+        return res.json({ success: false, message: '관리자는 도감이 없습니다.' });
+    }
+
+    const userId = req.session.userId;
+    const myCollection = memoryDB.collections.filter(c => c.user_id === userId);
+
+    // 전체 캐릭터에 보유 여부 합치기
+    const collectionData = CHARACTERS.map(char => {
+        const owned = myCollection.find(c => c.character_id === char.id);
+        return {
+            id: char.id,
+            grade: char.grade,
+            name: owned ? char.name : '???',          // 미보유 시 이름 숨김
+            emoji: owned ? char.emoji : '❓',          // 미보유 시 이모지 숨김
+            description: owned ? char.description : null,
+            color: char.color,
+            owned: !!owned,
+            count: owned ? owned.count : 0,
+            first_obtained_at: owned ? owned.first_obtained_at : null
+        };
+    });
+
+    // 등급별 보유 통계
+    const stats = {
+        SSS: { total: 1,  owned: 0 },
+        SS:  { total: 3,  owned: 0 },
+        S:   { total: 5,  owned: 0 },
+        A:   { total: 7,  owned: 0 },
+        B:   { total: 10, owned: 0 },
+        C:   { total: 14, owned: 0 },
+    };
+
+    collectionData.forEach(c => {
+        if (c.owned) stats[c.grade].owned++;
+    });
+
+    res.json({ success: true, collection: collectionData, stats });
+});
+
+// 관리자용 특정 참가자 도감 조회
+app.get('/admin/collection/:userId', requireAdmin, (req, res) => {
+    const userId = parseInt(req.params.userId);
+    const user = memoryDB.users.find(u => u.id === userId && !u.is_admin);
+
+    if (!user) {
+        return res.json({ success: false, message: '사용자를 찾을 수 없습니다.' });
+    }
+
+    const myCollection = memoryDB.collections.filter(c => c.user_id === userId);
+
+    const collectionData = CHARACTERS.map(char => {
+        const owned = myCollection.find(c => c.character_id === char.id);
+        return {
+            id: char.id,
+            grade: char.grade,
+            name: char.name,       // 관리자는 이름 전부 공개
+            emoji: char.emoji,
+            description: char.description,
+            color: char.color,
+            owned: !!owned,
+            count: owned ? owned.count : 0,
+            first_obtained_at: owned ? owned.first_obtained_at : null
+        };
+    });
+
+    res.json({ success: true, collection: collectionData, username: user.username });
+});
+
+// 관리자용 캐릭터별 보유자 검색
+app.get('/admin/collection/search/:characterId', requireAdmin, (req, res) => {
+    const characterId = req.params.characterId;
+    const character = CHARACTERS.find(c => c.id === characterId);
+
+    if (!character) {
+        return res.json({ success: false, message: '캐릭터를 찾을 수 없습니다.' });
+    }
+
+    // 해당 캐릭터를 보유한 유저 목록
+    const owners = memoryDB.collections
+        .filter(c => c.character_id === characterId)
+        .map(c => {
+            const user = memoryDB.users.find(u => u.id === c.user_id);
+            return {
+                userId: c.user_id,
+                username: user ? user.username : '???',
+                count: c.count,
+                first_obtained_at: c.first_obtained_at
+            };
+        })
+        .sort((a, b) => a.username.localeCompare(b.username, 'ko'));
+
+    res.json({
+        success: true,
+        character,
+        owners,
+        ownerCount: owners.length
+    });
+});
+
 // 내 토큰 잔액 및 로그 조회
 app.get('/my-tokens', requireAuth, (req, res) => {
     if (req.session.isAdmin) {
