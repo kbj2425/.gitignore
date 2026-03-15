@@ -516,6 +516,21 @@ async playSequenceWithVoice(count, onBeep = null) {
 
 const audioManager = new PrecisionAudioManager();
 
+        // 영혼석 잔액 조회
+        async function loadSoulStone() {
+            try {
+                const res = await fetch('/my-tokens');
+                const data = await res.json();
+                if (data.success) {
+                    document.getElementById('soulStoneAmount').textContent = data.balance;
+                }
+            } catch (err) {
+                document.getElementById('soulStoneAmount').textContent = '?';
+            }
+        }
+
+        loadSoulStone();
+
         function toggleDropdown() {
             const dropdown = document.getElementById('dropdown');
             dropdown.classList.toggle('show');
