@@ -298,18 +298,23 @@
 <body>
     <div class="header">
         <div class="logo">READIN</div>
-        <div class="user-menu">
-            <div class="username" onclick="toggleDropdown()"><%= username %> ▼</div>
-           <div class="dropdown" id="dropdown">
-                <a href="/dashboard">대시보드</a>
-                <a href="/gacha">💎 영혼석 뽑기</a>
-                <a href="/collection">📖 도감</a>
-                <a href="/news">📰 이달의 뉴스</a>
-                <a href="/enter-code-page">🎁 영혼석 코드</a>
-                <a href="/ranking">🏆 랭킹</a>
-                <a href="/my-badges">🎖️ 내 배지</a>
-                <a href="/change-password">비밀번호 변경</a>
-                <a href="/logout">로그아웃</a>
+        <div style="display: flex; align-items: center; gap: 15px;">
+            <div style="color: #FF69B4; font-weight: bold;">
+                💎 <span id="soulStoneAmount">...</span>
+            </div>
+            <div class="user-menu">
+                <div class="username" onclick="toggleDropdown()"><%= username %> ▼</div>
+                <div class="dropdown" id="dropdown">
+                    <a href="/dashboard">대시보드</a>
+                    <a href="/gacha">💎 영혼석 뽑기</a>
+                    <a href="/collection">📖 도감</a>
+                    <a href="/news">📰 이달의 뉴스</a>
+                    <a href="/enter-code-page">🎁 영혼석 코드</a>
+                    <a href="/ranking">🏆 랭킹</a>
+                    <a href="/my-badges">🎖️ 내 배지</a>
+                    <a href="/change-password">비밀번호 변경</a>
+                    <a href="/logout">로그아웃</a>
+                </div>
             </div>
         </div>
     </div>
