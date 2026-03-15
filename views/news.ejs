@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>이달의 뉴스 - READIN</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #FFC0CB, #FFB6C1);
+            min-height: 100vh;
+        }
+
+        .header {
+            background: white;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo { color: #FFC0CB; font-size: 1.8em; font-weight: bold; }
+
+        .user-menu { position: relative; }
+
+        .username {
+            color: #FFC0CB;
+            font-weight: bold;
+            cursor: pointer;
+            padding: 10px 15px;
+            border-radius: 5px;
+            transition: background 0.3s;
+        }
+
+        .username:hover { background: #f0f0f0; }
+
+        .dropdown {
+            position: absolute;
+            top: 100%; right: 0;
+            background: white;
+            min-width: 180px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            border-radius: 5px;
+            display: none;
+            z-index: 1000;
+        }
+
+        .dropdown.show { display: block; }
+
+        .dropdown a {
+            display: block;
+            padding: 10px 15px;
+            text-decoration: none;
+            color: #333;
+            transition: background 0.3s;
+        }
+
+        .dropdown a:hover { background: #FFC0CB; color: white; }
+
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+
+        /* 페이지 헤더 */
+        .page-header {
+            background: white;
+            border-radius: 20px;
+            padding: 25px 30px;
+            margin-bottom: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            text-align: center;
+        }
+
+        .page-title {
+            font-size: 2em;
+            font-weight: bold;
+            color: #FF69B4;
+            margin-bottom: 5px;
+        }
+
+        .page-subtitle {
+            color: #aaa;
+            font-size: 0.9em;
+        }
+
+        /* 뉴스 없을 때 */
+        .no-news {
+            background: white;
+            border-radius: 20px;
+            padding: 60px 30px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+
+        .no-news-icon { font-size: 4em; margin-bottom: 15px; }
+
+        .no-news p { color: #aaa; font-size: 1em; }
+
+        /* 뉴스 카드 */
+        .news-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px 25px;
+            margin-bottom: 12px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: transform 0.2s;
+            border-left: 5px solid var(--grade-color);
+        }
+
+        .news-card:hover { transform: translateX(4px); }
+
+        /* 캐릭터 이미지 */
+        .news-char-frame {
+            position: relative;
+            width: 60px;
+            height: 60px;
+            flex-shrink: 0;
+        }
+
+        .news-char-frame::before {
+            content: '';
+            position: absolute;
+            top: -3px; left: -3px;
+            width: calc(100% + 6px);
+            height: calc(100% + 6px);
+            border-radius: 50%;
+            background: conic-gradient(
+                var(--grade-color) 0deg,
+                transparent 120deg,
+                var(--grade-color) 240deg,
+                transparent 360deg
+            );
+            animation: rotateBorder 2s linear infinite;
+            z-index: 0;
+        }
+
+        @keyframes rotateBorder {
+            from { transform: rotate(0deg); }
+            to   { transform: rotate(360deg); }
+        }
+
+        .news-char-img {
+            position: relative;
+            z-index: 1;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            overflow: hidden;
+            background: #f8f9fa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .news-char-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .news-char-emoji { font-size: 1.8em; }
+
+        /* 뉴스 내용 */
+        .news-body { flex: 1; }
+
+        .news-grade-badge {
+            font-size: 0.72em;
+            font-weight: bold;
+            padding: 2px 8px;
+            border-radius: 8px;
+            color: white;
+            display: inline-block;
+            margin-bottom: 5px;
+        }
+
+        .badge-SSS { background: #DAA520; }
+        .badge-SS  { background: #9B59B6; }
+
+        .news-text {
+            font-size: 0.95em;
+            color: #333;
+            line-height: 1.5;
+        }
+
+        .news-text strong { color: #FF69B4; }
+
+        .news-char-name {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .news-time {
+            font-size: 0.78em;
+            color: #aaa;
+            margin-top: 4px;
+        }
+
+        /* SSS 카드 특별 스타일 */
+        .news-card.news-SSS {
+            background: linear-gradient(135deg, #fffdf0, #fff8dc);
+            box-shadow: 0 3px 15px rgba(218,165,32,0.2);
+        }
+
+        .news-card.news-SS {
+            background: linear-gradient(135deg, #fdf8ff, #f5eeff);
+            box-shadow: 0 3px 15px rgba(155,89,182,0.15);
+        }
+
+        /* 로딩 */
+        .loading {
+            text-align: center;
+            padding: 60px;
+            color: #aaa;
+            font-size: 1.1em;
+            background: white;
+            border-radius: 15px;
+        }
+
+        .back-btn {
+            display: block;
+            text-align: center;
+            background: white;
+            color: #FF69B4;
+            padding: 12px 30px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: bold;
+            margin-top: 20px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+            transition: background 0.3s;
+        }
+
+        .back-btn:hover { background: #FFC0CB; color: white; }
+
+        @media (max-width: 600px) {
+            .news-card { padding: 15px; gap: 12px; }
+            .news-char-frame { width: 50px; height: 50px; }
+            .news-char-img { width: 50px; height: 50px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">READIN</div>
+        <div style="display: flex; align-items: center; gap: 15px;">
+            <div style="color: #FF69B4; font-weight: bold;">
+                💎 <span id="soulStoneAmount">...</span>
+            </div>
+            <div class="user-menu">
+                <div class="username" onclick="toggleDropdown()"><%= username %> ▼</div>
+                <div class="dropdown" id="dropdown">
+                    <a href="/dashboard">대시보드</a>
+                    <a href="/gacha">💎 영혼석 뽑기</a>
+                    <a href="/collection">📖 도감</a>
+                    <a href="/enter-code-page">🎁 영혼석 코드</a>
+                    <a href="/ranking">🏆 랭킹</a>
+                    <a href="/my-badges">🎖️ 내 배지</a>
+                    <a href="/logout">로그아웃</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="page-header">
+            <div class="page-title">📰 이달의 뉴스</div>
+            <div class="page-subtitle">
+                SSS · SS 등급 소환 소식을 전해드립니다!<br>
+                <span style="font-size:0.85em; color:#FFB6C1;">※ 이름은 개인정보 보호를 위해 일부 가려집니다</span>
+            </div>
+        </div>
+
+        <div id="newsList">
+            <div class="loading">뉴스 불러오는 중... 📰</div>
+        </div>
+
+        <a href="/dashboard" class="back-btn">대시보드로 돌아가기</a>
+    </div>
+
+    <script>
+        let dropdownTimeout;
+
+        // 드롭다운
+        function toggleDropdown() {
+            document.getElementById('dropdown').classList.toggle('show');
+        }
+        document.querySelector('.user-menu').addEventListener('mouseenter', () => {
+            clearTimeout(dropdownTimeout);
+            document.getElementById('dropdown').classList.add('show');
+        });
+        document.querySelector('.user-menu').addEventListener('mouseleave', () => {
+            dropdownTimeout = setTimeout(() => {
+                document.getElementById('dropdown').classList.remove('show');
+            }, 300);
+        });
+        document.addEventListener('click', e => {
+            if (!document.querySelector('.user-menu').contains(e.target)) {
+                document.getElementById('dropdown').classList.remove('show');
+            }
+        });
+
+        // 영혼석 잔액 조회
+        async function loadSoulStone() {
+            try {
+                const res = await fetch('/my-tokens');
+                const data = await res.json();
+                if (data.success) {
+                    document.getElementById('soulStoneAmount').textContent = data.balance;
+                }
+            } catch (err) {
+                document.getElementById('soulStoneAmount').textContent = '?';
+            }
+        }
+
+        // 날짜 포맷
+        function formatDate(dateStr) {
+            const d = new Date(dateStr);
+            return `${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+        }
+
+        // 이미지 설정
+        function setNewsImage(wrapEl, characterId) {
+            const img = document.createElement('img');
+            img.src = `/images/characters/${characterId}.png`;
+            img.alt = '';
+            img.onerror = () => {
+                img.remove();
+                const fb = document.createElement('div');
+                fb.className = 'news-char-emoji';
+                fb.textContent = '✨';
+                wrapEl.appendChild(fb);
+            };
+            wrapEl.appendChild(img);
+        }
+
+        // 뉴스 로딩
+        async function loadNews() {
+            try {
+                const res = await fetch('/news/data');
+                const data = await res.json();
+                const list = document.getElementById('newsList');
+
+                if (!data.success || data.news.length === 0) {
+                    list.innerHTML = `
+                        <div class="no-news">
+                            <div class="no-news-icon">📭</div>
+                            <p>아직 뉴스가 없습니다.<br>SSS · SS 등급을 소환하면 여기에 표시돼요!</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                const gradeColors = { SSS: '#DAA520', SS: '#9B59B6' };
+
+                list.innerHTML = '';
+                data.news.forEach(n => {
+                    const color = gradeColors[n.grade] || '#FF69B4';
+
+                    const card = document.createElement('div');
+                    card.className = `news-card news-${n.grade}`;
+                    card.style.setProperty('--grade-color', color);
+
+                    // 캐릭터 프레임
+                    const frame = document.createElement('div');
+                    frame.className = 'news-char-frame';
+                    frame.style.setProperty('--grade-color', color);
+
+                    const imgWrap = document.createElement('div');
+                    imgWrap.className = 'news-char-img';
+                    setNewsImage(imgWrap, n.character_id);
+                    frame.appendChild(imgWrap);
+
+                    // 뉴스 내용
+                    const body = document.createElement('div');
+                    body.className = 'news-body';
+                    body.innerHTML = `
+                        <div>
+                            <span class="news-grade-badge badge-${n.grade}">${n.grade}</span>
+                        </div>
+                        <div class="news-text">
+                            <strong>${n.maskedName}</strong> 님이
+                            <span class="news-char-name">「${n.character_name}」</span>
+                            을(를) 소환했습니다! 🎉
+                        </div>
+                        <div class="news-time">${formatDate(n.obtained_at)}</div>
+                    `;
+
+                    card.appendChild(frame);
+                    card.appendChild(body);
+                    list.appendChild(card);
+                });
+
+            } catch (err) {
+                document.getElementById('newsList').innerHTML =
+                    '<div class="loading">뉴스를 불러올 수 없습니다.</div>';
+                console.error('뉴스 로딩 오류:', err);
+            }
+        }
+
+        // 초기 로딩
+        loadNews();
+        loadSoulStone();
+    </script>
+</body>
+</html>
