@@ -1328,7 +1328,10 @@ app.get('/my-badges', requireAuth, (req, res) => {
 app.get('/admin', requireAdmin, async (req, res) => {
     try {
         const usersResult = await query("SELECT id, username, level, created_at, last_login, status FROM users WHERE is_admin = false ORDER BY username");
-        const users = usersResult.rows;
+        // ✅ ㄱㄴㄷ순 정렬
+        const users = usersResult.rows.sort((a, b) =>
+            a.username.localeCompare(b.username, 'ko')
+        );
         
         const settingsResult = await query("SELECT key, value, description FROM settings ORDER BY key");
         const settingsObj = {};
@@ -1351,7 +1354,11 @@ app.post('/admin/search', requireAdmin, async (req, res) => {
     const { searchTerm } = req.body;
     try {
         const result = await query("SELECT id, username, level, created_at, last_login, status FROM users WHERE is_admin = false AND username ILIKE $1 ORDER BY username", [`%${searchTerm}%`]);
-        res.json({ users: result.rows });
+        // ✅ ㄱㄴㄷ순 정렬
+        const sorted = result.rows.sort((a, b) =>
+            a.username.localeCompare(b.username, 'ko')
+        );
+        res.json({ users: sorted });
     } catch (error) {
         console.error('사용자 검색 오류:', error);
         res.json({ users: [] });
