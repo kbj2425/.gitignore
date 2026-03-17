@@ -326,10 +326,13 @@
             return `${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
         }
 
+       // Cloudinary 이미지 경로
+        const CLOUDINARY_BASE = 'https://res.cloudinary.com/dgtn7bquf/image/upload/characters';
+
         // 이미지 설정
         function setNewsImage(wrapEl, characterId) {
             const img = document.createElement('img');
-            img.src = `/images/characters/${characterId}.png`;
+            img.src = `${CLOUDINARY_BASE}/${characterId}.png`;
             img.alt = '';
             img.onerror = () => {
                 img.remove();
