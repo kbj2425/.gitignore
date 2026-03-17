@@ -225,8 +225,12 @@
     <div class="header">
         <div class="logo">READIN</div>
         <div style="display: flex; align-items: center; gap: 15px;">
-            <div style="color: #FF69B4; font-weight: bold;">
-                💎 <span id="soulStoneAmount">...</span>
+            <div style="display: flex; align-items: center; gap: 6px; font-weight: bold; color: #FF69B4;">
+                <img src="https://res.cloudinary.com/dgtn7bquf/image/upload/characters/soul-stone.png"
+                     style="width: 24px; height: 24px; object-fit: contain;"
+                     onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">
+                <span style="display:none;">💎</span>
+                <span id="soulStoneAmount">...</span>
             </div>
             <div class="user-menu">
                 <div class="username" onclick="toggleDropdown()"><%= username %> ▼</div>
