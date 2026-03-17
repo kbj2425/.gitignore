@@ -1754,7 +1754,7 @@ app.post('/gacha/draw', requireAuth, (req, res) => {
         return res.json({ success: false, message: '관리자는 뽑기를 할 수 없습니다.' });
     }
 
-    const drawCount = Math.min(Math.max(parseInt(req.body.count) || 1, 1), 10);
+    const drawCount = Math.max(parseInt(req.body.count) || 1, 1);
     const userId = req.session.userId;
     const totalCost = GACHA_COST * drawCount;
     const balance = getTokenBalance(userId);
