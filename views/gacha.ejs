@@ -1132,9 +1132,11 @@
         let dropdownTimeout;
         const GACHA_COST = <%= gachaCost %>;
 
-        // 이미지 경로
+        // Cloudinary 이미지 경로
+        const CLOUDINARY_BASE = 'https://res.cloudinary.com/dgtn7bquf/image/upload/characters';
+
         function getCharImg(characterId) {
-            return `/images/characters/${characterId}.png`;
+            return `${CLOUDINARY_BASE}/${characterId}.png`;
         }
 
         // 이미지 로드 실패 시 이모지 폴백
