@@ -1171,9 +1171,8 @@
             }
         });
 
-        // 수량 조절
         function changeCount(delta) {
-            drawCount = Math.max(1, Math.min(10, drawCount + delta));
+            drawCount = Math.max(1, drawCount + delta);
             document.getElementById('drawCount').textContent = drawCount;
             document.getElementById('costDisplay').innerHTML =
                 `소비 영혼석: <strong>${drawCount * GACHA_COST}개</strong>`;
