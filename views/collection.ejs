@@ -620,10 +620,13 @@
             }
         }
 
+       // Cloudinary 이미지 경로
+        const CLOUDINARY_BASE = 'https://res.cloudinary.com/dgtn7bquf/image/upload/characters';
+
         // 이미지 설정 (실패 시 이모지 폴백)
         function setImage(wrapEl, characterId, isOwned) {
             const img = document.createElement('img');
-            img.src = `/images/characters/${characterId}.png`;
+            img.src = `${CLOUDINARY_BASE}/${characterId}.png`;
             img.alt = '';
 
             if (!isOwned) {
@@ -764,7 +767,7 @@
                 frame.style.setProperty('--grade-color', color);
 
                 const img = document.createElement('img');
-                img.src = `/images/characters/${char.id}.png`;
+                img.src = `${CLOUDINARY_BASE}/${char.id}.png`;
                 img.alt = char.name;
                 img.onerror = () => {
                     img.remove();
@@ -777,7 +780,7 @@
             } else {
                 frame.className = 'detail-frame';
                 const img = document.createElement('img');
-                img.src = `/images/characters/${char.id}.png`;
+                img.src = `${CLOUDINARY_BASE}/${char.id}.png`;
                 img.alt = '';
                 img.style.filter = 'brightness(0) opacity(0.3)';
                 img.onerror = () => {
